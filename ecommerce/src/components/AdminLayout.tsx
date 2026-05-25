@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../services/supabaseClient'
-import { LayoutDashboard, Package, LogOut, Menu, X, Shirt, Settings } from 'lucide-react'
+import { LayoutDashboard, Package, LogOut, Menu, X, Shirt, Settings, Store } from 'lucide-react'
 import { useIsMobile } from '../hooks/useIsMobile'
 
 const navItems = [
   { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
   { label: 'Productos', path: '/admin/productos', icon: Package },
-  { label: 'Configuración', path: '/admin/configuracion', icon: Settings }
+  { label: 'Configuración', path: '/admin/configuracion', icon: Settings },
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -27,11 +27,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (isMobile) setMenuOpen(false)
   }
 
-  // ── MÓVIL ──
   if (isMobile) {
     return (
       <div style={{ minHeight: '100vh', background: '#f7f8fa', display: 'flex', flexDirection: 'column' }}>
-        {/* Topbar */}
         <header style={styles.topbar}>
           <div style={styles.topbarLogo}>
             <Shirt size={20} color="#fff" />
@@ -42,7 +40,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </header>
 
-        {/* Drawer */}
         {menuOpen && (
           <div style={styles.drawer}>
             <nav style={styles.drawerNav}>
@@ -63,15 +60,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </button>
                 )
               })}
+
+              {/* ✅ FIX AQUÍ */}
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={styles.drawerCatalogBtn}
+                onClick={() => setMenuOpen(false)}
+              >
+                <Store size={20} color="#25d366" />
+                <span style={{ ...styles.drawerLabel, color: '#25d366' }}>Ver tienda</span>
+              </a>
+
+              <button style={styles.drawerLogout} onClick={handleLogout}>
+                <LogOut size={20} color="#fff" />
+                <span style={styles.drawerLabel}>Cerrar sesión</span>
+              </button>
             </nav>
-            <button style={styles.drawerLogout} onClick={handleLogout}>
-              <LogOut size={20} color="#fff" />
-              <span style={styles.drawerLabel}>Cerrar sesión</span>
-            </button>
           </div>
         )}
 
-        {/* Contenido */}
         <main style={{ flex: 1, padding: '1.25rem', overflowX: 'hidden' }}>
           {children}
         </main>
@@ -79,10 +88,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     )
   }
 
-  // ── DESKTOP ──
   return (
     <div style={styles.desktopWrapper}>
-      {/* Sidebar */}
       <aside style={{ ...styles.sidebar, width: sidebarOpen ? '240px' : '64px' }}>
         <div style={styles.logo}>
           <Shirt size={24} color="#fff" />
@@ -113,13 +120,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
         </nav>
 
+        {/* ✅ FIX AQUÍ */}
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={styles.catalogBtn}
+          title="Ver tienda"
+        >
+          <Store size={20} color="#25d366" />
+          {sidebarOpen && (
+            <span style={{ ...styles.navLabel, color: '#25d366' }}>Ver tienda</span>
+          )}
+        </a>
+
         <button style={styles.logoutBtn} onClick={handleLogout}>
           <LogOut size={20} color="#fff" />
           {sidebarOpen && <span style={styles.navLabel}>Cerrar sesión</span>}
         </button>
       </aside>
 
-      {/* Contenido principal */}
       <main style={styles.main}>
         {children}
       </main>
@@ -128,10 +148,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  // ── Desktop ──
   desktopWrapper: {
     display: 'flex',
-    flexDirection: 'row',       // ← clave: sidebar y main en fila
+    flexDirection: 'row',
     minHeight: '100vh',
     background: '#f7f8fa',
   },
@@ -144,7 +163,7 @@ const styles: Record<string, React.CSSProperties> = {
     top: 0,
     height: '100vh',
     overflow: 'hidden',
-    flexShrink: 0,              // ← no se comprime
+    flexShrink: 0,
   },
   logo: {
     display: 'flex',
@@ -190,6 +209,18 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#fff',
     fontSize: '0.9rem',
   },
+  catalogBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    padding: '0.75rem 1.25rem',
+    background: 'rgba(37,211,102,0.08)',
+    border: 'none',
+    borderTop: '1px solid rgba(255,255,255,0.1)',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+    textDecoration: 'none',
+  },
   logoutBtn: {
     display: 'flex',
     alignItems: 'center',
@@ -205,10 +236,8 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
     padding: '2rem',
     overflow: 'auto',
-    minWidth: 0,                // ← evita que el contenido desborde
+    minWidth: 0,
   },
-
-  // ── Móvil ──
   topbar: {
     background: '#1a1a2e',
     padding: '0.85rem 1.25rem',
@@ -268,14 +297,26 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#fff',
     fontSize: '0.95rem',
   },
+  drawerCatalogBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    padding: '0.75rem 1rem',
+    background: 'rgba(37,211,102,0.1)',
+    border: 'none',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    textDecoration: 'none',
+  },
   drawerLogout: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.75rem',
-    padding: '0.85rem 1.25rem',
+    padding: '0.85rem 1rem',
     background: 'transparent',
     border: 'none',
     borderTop: '1px solid rgba(255,255,255,0.1)',
     cursor: 'pointer',
+    width: '100%',
   },
 }
