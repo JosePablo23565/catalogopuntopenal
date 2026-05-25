@@ -36,6 +36,16 @@ export default function ProductForm() {
   // Para edición: imágenes ya guardadas
   const [savedImages, setSavedImages] = useState<any[]>([])
 
+  // Responsive helper
+  const [isMobile, setIsMobile] = useState<boolean>(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 600)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   useEffect(() => {
     if (isEditing) {
       setLoading(true)
@@ -237,31 +247,34 @@ export default function ProductForm() {
             />
           </div>
 
-          <div style={styles.row}>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Precio (₡) *</label>
-              <input
-                style={styles.input}
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.price}
-                onChange={e => setForm({ ...form, price: e.target.value })}
-                required
-              />
-            </div>
-            <div style={{ ...styles.field, flex: 1 }}>
-              <label style={styles.label}>Stock *</label>
-              <input
-                style={styles.input}
-                type="number"
-                min="0"
-                value={form.stock}
-                onChange={e => setForm({ ...form, stock: e.target.value })}
-                required
-              />
-            </div>
-          </div>
+          <div style={{
+  ...styles.row,
+  flexDirection: isMobile ? 'column' : 'row',
+}}>
+  <div style={{ ...styles.field, flex: 1 }}>
+    <label style={styles.label}>Precio (₡) *</label>
+    <input
+      style={styles.input}
+      type="number"
+      min="0"
+      step="0.01"
+      value={form.price}
+      onChange={e => setForm({ ...form, price: e.target.value })}
+      required
+    />
+  </div>
+  <div style={{ ...styles.field, flex: 1 }}>
+    <label style={styles.label}>Stock *</label>
+    <input
+      style={styles.input}
+      type="number"
+      min="0"
+      value={form.stock}
+      onChange={e => setForm({ ...form, stock: e.target.value })}
+      required
+    />
+  </div>
+</div>
 
           <div style={styles.field}>
             <label style={styles.label}>Tallas disponibles</label>
