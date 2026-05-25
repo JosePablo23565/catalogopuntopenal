@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getProductById } from '../services/productService'
+import { getProductById, getSettings } from '../services/productService'
 import { ArrowLeft, Shirt } from 'lucide-react'
+
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -11,17 +12,38 @@ export default function ProductDetail() {
   const [selectedImg, setSelectedImg] = useState<string>('')
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedColor, setSelectedColor] = useState('')
+  const [settings, setSettings] = useState<any>(null)
 
-  useEffect(() => {
-    if (id) {
-      getProductById(id).then(p => {
-        setProduct(p)
-        const main = p.product_images?.find((i: any) => i.is_main)
-        setSelectedImg(main?.url || p.product_images?.[0]?.url || '')
-        setLoading(false)
-      })
-    }
-  }, [id])
+ useEffect(() => {
+  if (id) {
+    getProductById(id).then(p => {
+      setProduct(p)
+      const main = p.product_images?.find((i: any) => i.is_main)
+      setSelectedImg(main?.url || p.product_images?.[0]?.url || '')
+      setLoading(false)
+    })
+    getSettings().then(setSettings)
+  }
+}, [id])
+
+const handleWhatsApp = () => {
+  if (!settings?.whatsapp_number) return
+
+  const lines = [
+    `¡Hola! Me interesa encargar:`,
+    ``,
+    `👕 *${product.name}*`,
+    `💰 Precio: ₡${product.price.toLocaleString()}`,
+    selectedSize ? `📏 Talla: ${selectedSize}` : '',
+    selectedColor ? `🎨 Color: ${selectedColor}` : '',
+    ``,
+    `¿Está disponible?`,
+  ].filter(Boolean).join('\n')
+
+  const encoded = encodeURIComponent(lines)
+  const phone = `${settings.whatsapp_country_code}${settings.whatsapp_number.replace(/\s/g, '')}`
+  window.open(`https://wa.me/${phone}?text=${encoded}`, '_blank')
+}
 
   if (loading) return <div style={styles.loading}>Cargando...</div>
   if (!product) return <div style={styles.loading}>Producto no encontrado</div>
@@ -137,9 +159,25 @@ export default function ProductDetail() {
                 : '❌ Sin stock'}
             </p>
 
-            <button style={styles.buyBtn}>
-              Agregar al carrito
-            </button>
+            <button
+  style={{
+    ...styles.buyBtn,
+    background: '#25d366',
+    opacity: !settings?.whatsapp_number ? 0.5 : 1,
+    cursor: !settings?.whatsapp_number ? 'not-allowed' : 'pointer',
+  }}
+  onClick={handleWhatsApp}
+  disabled={!settings?.whatsapp_number}
+>
+  <span style={{ fontSize: '1.2rem' }}>💬</span>
+  Encargar por WhatsApp
+</button>
+
+{!settings?.whatsapp_number && (
+  <p style={{ fontSize: '0.8rem', color: '#aaa', textAlign: 'center', margin: 0 }}>
+    El administrador aún no configuró el número de WhatsApp
+  </p>
+)}
           </div>
         </div>
       </main>

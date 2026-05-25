@@ -6,6 +6,7 @@ import ProductForm from './pages/ProductForm'
 import Catalog from './pages/Catalog'
 import ProductDetail from './pages/ProductDetail'
 import ProtectedRoute from './components/ProtectedRoute'
+import Settings from './pages/Settings'
 
 export default function App() {
   return (
@@ -23,6 +24,7 @@ export default function App() {
         <Route path="/admin/productos" element={<ProtectedRoute><ProductList /></ProtectedRoute>} />
         <Route path="/admin/productos/nuevo" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
         <Route path="/admin/productos/editar/:id" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
+        <Route path="/admin/configuracion" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

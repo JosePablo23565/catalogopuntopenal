@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../services/supabaseClient'
-import { LayoutDashboard, Package, LogOut, Menu, X, Shirt } from 'lucide-react'
+import { LayoutDashboard, Package, LogOut, Menu, X, Shirt, Settings } from 'lucide-react'
 import { useIsMobile } from '../hooks/useIsMobile'
 
 const navItems = [
   { label: 'Dashboard', path: '/admin', icon: LayoutDashboard },
   { label: 'Productos', path: '/admin/productos', icon: Package },
+  { label: 'Configuración', path: '/admin/configuracion', icon: Settings }
 ]
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

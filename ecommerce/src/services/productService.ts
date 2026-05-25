@@ -102,3 +102,25 @@ export const setMainImage = async (imageId: string, productId: string) => {
 
   if (error) throw error
 }
+
+export const getSettings = async () => {
+  const { data, error } = await supabase
+    .from('settings')
+    .select('*')
+    .single()
+  if (error) throw error
+  return data
+}
+
+export const updateSettings = async (countryCode: string, number: string) => {
+  const { data, error } = await supabase
+    .from('settings')
+    .update({
+      whatsapp_country_code: countryCode,
+      whatsapp_number: number,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', (await getSettings()).id)
+  if (error) throw error
+  return data
+}
