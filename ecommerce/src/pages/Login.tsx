@@ -54,6 +54,7 @@ export default function Login() {
         <div style={styles.logoBox}>
           <Shirt size={32} color="#1a1a2e" />
           <h2 style={styles.title}>CamisasAdmin</h2>
+          
         </div>
 
         <p style={styles.subtitle}>Ingresá a tu panel</p>
@@ -99,6 +100,13 @@ export default function Login() {
           <button type="submit" style={styles.button} disabled={loading}>
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
+          <button
+  type="button"
+  style={styles.catalogBtn}
+  onClick={() => navigate('/')}
+>
+  Ver catálogo →
+</button>
         </form>
       </div>
     </div>
@@ -198,4 +206,14 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '0.5rem 0.75rem',
     borderRadius: '6px',
   },
+  catalogBtn: {
+  background: 'transparent',
+  border: 'none',
+  color: '#888',
+  fontSize: '0.875rem',
+  cursor: 'pointer',
+  marginTop: '0.25rem',
+  textDecoration: 'underline',
+},
+
 }
