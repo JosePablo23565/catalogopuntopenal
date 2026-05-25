@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../components/AdminLayout'
-import { getProducts, deleteProduct } from '../services/productService'
+import { getProducts, deleteProduct, getSettings } from '../services/productService'
 import type { Product } from '../types/product'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, FileDown } from 'lucide-react'
 import { useIsMobile } from '../hooks/useIsMobile'
+import { generateCatalogPDF } from '../services/pdfService'
 
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [exporting, setExporting] = useState(false)
   const navigate = useNavigate()
   const isMobile = useIsMobile()
 
@@ -30,6 +32,19 @@ export default function ProductList() {
     fetchProducts()
   }
 
+  const handleExportPDF = async () => {
+    setExporting(true)
+    try {
+      const settings = await getSettings()
+      const storeUrl = window.location.origin
+      await generateCatalogPDF(products as any, settings, storeUrl)
+    } catch (err) {
+      console.error('Error generando PDF:', err)
+    } finally {
+      setExporting(false)
+    }
+  }
+
   return (
     <AdminLayout>
       <div style={styles.header}>
@@ -37,10 +52,29 @@ export default function ProductList() {
           <h1 style={styles.title}>Productos</h1>
           <p style={styles.subtitle}>Gestioná tu catálogo</p>
         </div>
-        <button style={styles.addBtn} onClick={() => navigate('/admin/productos/nuevo')}>
-          <Plus size={18} />
-          {!isMobile && 'Nuevo producto'}
-        </button>
+
+        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <button
+            style={{
+              ...styles.exportBtn,
+              opacity: exporting || products.length === 0 ? 0.6 : 1,
+              cursor: exporting || products.length === 0 ? 'not-allowed' : 'pointer',
+            }}
+            onClick={handleExportPDF}
+            disabled={exporting || products.length === 0}
+          >
+            <FileDown size={18} />
+            {isMobile ? '' : exporting ? 'Generando...' : 'Exportar PDF'}
+          </button>
+
+          <button
+            style={styles.addBtn}
+            onClick={() => navigate('/admin/productos/nuevo')}
+          >
+            <Plus size={18} />
+            {!isMobile && 'Nuevo producto'}
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -143,6 +177,7 @@ const styles: Record<string, React.CSSProperties> = {
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: '1.5rem',
+    gap: '1rem',
   },
   title: { fontSize: '1.5rem', fontWeight: 700, color: '#1a1a2e', margin: 0 },
   subtitle: { color: '#666', marginTop: '0.25rem', fontSize: '0.875rem' },
@@ -160,6 +195,19 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     flexShrink: 0,
   },
+  exportBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.65rem 1.25rem',
+    background: '#fff',
+    color: '#1a1a2e',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    fontSize: '0.9rem',
+    fontWeight: 600,
+    flexShrink: 0,
+  },
   empty: {
     background: '#fff',
     borderRadius: '10px',
@@ -168,7 +216,6 @@ const styles: Record<string, React.CSSProperties> = {
     color: '#999',
     boxShadow: '0 1px 4px rgba(0,0,0,0.07)',
   },
-  // Móvil cards
   cardList: {
     display: 'flex',
     flexDirection: 'column',
@@ -206,7 +253,6 @@ const styles: Record<string, React.CSSProperties> = {
     alignSelf: 'flex-start',
   },
   mobileActions: { display: 'flex', flexDirection: 'column', gap: '0.4rem' },
-  // Desktop tabla
   tableWrapper: {
     background: '#fff',
     borderRadius: '10px',

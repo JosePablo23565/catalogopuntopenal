@@ -1,3 +1,10 @@
+export interface ProductImage {
+  id: string
+  product_id: string
+  url: string
+  is_main: boolean
+}
+
 export interface Product {
   id: string
   name: string
@@ -7,11 +14,5 @@ export interface Product {
   colors: string[]
   stock: number
   created_at: string
-}
-
-export interface ProductImage {
-  id: string
-  product_id: string
-  url: string
-  is_main: boolean
+  product_images: ProductImage[]
 }
