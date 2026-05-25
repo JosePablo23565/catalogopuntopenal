@@ -29,8 +29,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // ── MÓVIL ──
   if (isMobile) {
     return (
-      <div style={styles.wrapper}>
-        {/* Topbar móvil */}
+      <div style={{ minHeight: '100vh', background: '#f7f8fa', display: 'flex', flexDirection: 'column' }}>
+        {/* Topbar */}
         <header style={styles.topbar}>
           <div style={styles.topbarLogo}>
             <Shirt size={20} color="#fff" />
@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
         </header>
 
-        {/* Drawer menu */}
+        {/* Drawer */}
         {menuOpen && (
           <div style={styles.drawer}>
             <nav style={styles.drawerNav}>
@@ -71,7 +71,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )}
 
         {/* Contenido */}
-        <main style={styles.mobileMain}>
+        <main style={{ flex: 1, padding: '1.25rem', overflowX: 'hidden' }}>
           {children}
         </main>
       </div>
@@ -80,7 +80,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   // ── DESKTOP ──
   return (
-    <div style={styles.wrapper}>
+    <div style={styles.desktopWrapper}>
+      {/* Sidebar */}
       <aside style={{ ...styles.sidebar, width: sidebarOpen ? '240px' : '64px' }}>
         <div style={styles.logo}>
           <Shirt size={24} color="#fff" />
@@ -88,7 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         <button style={styles.toggleBtn} onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
+          {sidebarOpen ? <X size={18} color="#fff" /> : <Menu size={18} color="#fff" />}
         </button>
 
         <nav style={styles.nav}>
@@ -117,6 +118,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </button>
       </aside>
 
+      {/* Contenido principal */}
       <main style={styles.main}>
         {children}
       </main>
@@ -125,14 +127,87 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  wrapper: {
+  // ── Desktop ──
+  desktopWrapper: {
     display: 'flex',
+    flexDirection: 'row',       // ← clave: sidebar y main en fila
     minHeight: '100vh',
     background: '#f7f8fa',
+  },
+  sidebar: {
+    background: '#1a1a2e',
+    display: 'flex',
     flexDirection: 'column',
+    transition: 'width 0.2s ease',
+    position: 'sticky',
+    top: 0,
+    height: '100vh',
+    overflow: 'hidden',
+    flexShrink: 0,              // ← no se comprime
+  },
+  logo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    padding: '1.25rem 1rem',
+    borderBottom: '1px solid rgba(255,255,255,0.1)',
+  },
+  logoText: {
+    color: '#fff',
+    fontWeight: 700,
+    fontSize: '1rem',
+    whiteSpace: 'nowrap',
+  },
+  toggleBtn: {
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    padding: '0.75rem 1rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  nav: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.25rem',
+    padding: '0.5rem',
+    flex: 1,
+  },
+  navItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    padding: '0.65rem 0.75rem',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    transition: 'background 0.15s',
+    whiteSpace: 'nowrap',
+  },
+  navLabel: {
+    color: '#fff',
+    fontSize: '0.9rem',
+  },
+  logoutBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.75rem',
+    padding: '0.75rem 1.25rem',
+    background: 'transparent',
+    border: 'none',
+    borderTop: '1px solid rgba(255,255,255,0.1)',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
+  },
+  main: {
+    flex: 1,
+    padding: '2rem',
+    overflow: 'auto',
+    minWidth: 0,                // ← evita que el contenido desborde
   },
 
-  // Móvil
+  // ── Móvil ──
   topbar: {
     background: '#1a1a2e',
     padding: '0.85rem 1.25rem',
@@ -186,7 +261,6 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
-    color: '#fff',
     fontSize: '0.95rem',
   },
   drawerLabel: {
@@ -202,86 +276,5 @@ const styles: Record<string, React.CSSProperties> = {
     border: 'none',
     borderTop: '1px solid rgba(255,255,255,0.1)',
     cursor: 'pointer',
-    color: '#fff',
-  },
-  mobileMain: {
-    flex: 1,
-    padding: '1.25rem',
-    overflowX: 'hidden',
-  },
-
-  // Desktop
-  sidebar: {
-    background: '#1a1a2e',
-    display: 'flex',
-    flexDirection: 'column',
-    transition: 'width 0.2s ease',
-    position: 'sticky',
-    top: 0,
-    height: '100vh',
-    overflow: 'hidden',
-    flexShrink: 0,
-  },
-  logo: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    padding: '1.25rem 1rem',
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
-  },
-  logoText: {
-    color: '#fff',
-    fontWeight: 700,
-    fontSize: '1rem',
-    whiteSpace: 'nowrap',
-  },
-  toggleBtn: {
-    background: 'transparent',
-    border: 'none',
-    color: '#fff',
-    cursor: 'pointer',
-    padding: '0.75rem 1rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-  },
-  nav: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.25rem',
-    padding: '0.5rem',
-    flex: 1,
-  },
-  navItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    padding: '0.65rem 0.75rem',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    color: '#fff',
-    transition: 'background 0.15s',
-    whiteSpace: 'nowrap',
-  },
-  navLabel: {
-    color: '#fff',
-    fontSize: '0.9rem',
-  },
-  logoutBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.75rem',
-    padding: '0.75rem 1.25rem',
-    background: 'transparent',
-    border: 'none',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
-    cursor: 'pointer',
-    whiteSpace: 'nowrap',
-  },
-  main: {
-    flex: 1,
-    padding: '2rem',
-    overflow: 'auto',
   },
 }
