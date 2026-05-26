@@ -21,51 +21,68 @@ export const generateCatalogPDF = async (
 
   const waNumber = `${settings.whatsapp_country_code}${settings.whatsapp_number.replace(/\s/g, '')}`
 
-  // ── PORTADA PREMIUM ──
-  pdf.setFillColor(15, 17, 26)
+  // ── PORTADA PREMIUM DE ALTA GAMA ──
+  // Fondo oscuro lujoso
+  pdf.setFillColor(11, 15, 25)
   pdf.rect(0, 0, pageWidth, pageHeight, 'F')
 
+  // Círculos abstractos/orbes de neón suave
   pdf.setFillColor(30, 27, 75)
-  pdf.circle(pageWidth, 0, 120, 'F') 
-  pdf.setFillColor(79, 70, 229)
-  pdf.circle(0, pageHeight, 60, 'F')
+  pdf.circle(pageWidth, 0, 110, 'F') 
+  pdf.setFillColor(49, 46, 129)
+  pdf.circle(0, pageHeight, 70, 'F')
 
-  pdf.setTextColor(255, 255, 255)
-  pdf.setFont('helvetica', 'bold')
-  pdf.setFontSize(36)
-  pdf.text('CATÁLOGO', pageWidth / 2, 110, { align: 'center', charSpace: 2 })
-
-  pdf.setFontSize(18)
-  pdf.setTextColor(129, 140, 248) 
-  pdf.setFont('helvetica', 'normal')
-  pdf.text('CamisasShop', pageWidth / 2, 123, { align: 'center' })
+  // Marco de doble línea elegante
+  pdf.setDrawColor(99, 102, 241) // Índigo brillante
+  pdf.setLineWidth(0.4)
+  pdf.rect(8, 8, pageWidth - 16, pageHeight - 16, 'D')
 
   pdf.setDrawColor(79, 70, 229)
-  pdf.setLineWidth(0.75)
-  pdf.line(pageWidth / 2 - 25, 132, pageWidth / 2 + 25, 132)
+  pdf.setLineWidth(0.2)
+  pdf.rect(10, 10, pageWidth - 20, pageHeight - 20, 'D')
 
-  pdf.setFontSize(11)
-  pdf.setTextColor(156, 163, 175)
-  pdf.text('Colección Exclusiva', pageWidth / 2, 142, { align: 'center' })
+  // Textos de la Portada
+  pdf.setTextColor(165, 180, 252) // Índigo claro
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(10)
+  pdf.text('TIENDA ONLINE', pageWidth / 2, 95, { align: 'center', charSpace: 3 })
+
+  pdf.setTextColor(255, 255, 255)
+  pdf.setFontSize(36)
+  pdf.text('CATÁLOGO', pageWidth / 2, 112, { align: 'center', charSpace: 4 })
+
+  pdf.setFontSize(13)
+  pdf.setTextColor(148, 163, 184) // Slate 300
+  pdf.setFont('helvetica', 'normal')
+  pdf.text('COLECCIÓN EXCLUSIVA', pageWidth / 2, 122, { align: 'center', charSpace: 2 })
+
+  pdf.setDrawColor(99, 102, 241)
+  pdf.setLineWidth(0.6)
+  pdf.line(pageWidth / 2 - 25, 131, pageWidth / 2 + 25, 131)
+
+  pdf.setFontSize(10)
+  pdf.setTextColor(148, 163, 184)
+  pdf.text('Estilo y Calidad en Cada Detalle', pageWidth / 2, 142, { align: 'center' })
 
   if (waNumber) {
-    pdf.setFillColor(16, 185, 129) 
-    pdf.roundedRect(pageWidth / 2 - 45, 160, 90, 12, 2, 2, 'F')
+    pdf.setFillColor(16, 185, 129) // Emerald
+    pdf.roundedRect(pageWidth / 2 - 42, 162, 84, 11, 2, 2, 'F')
     pdf.setTextColor(255, 255, 255)
-    pdf.setFontSize(9)
+    pdf.setFontSize(8)
     pdf.setFont('helvetica', 'bold')
     pdf.textWithLink(
-      `Pedir por WhatsApp`,
+      `PEDIR POR WHATSAPP →`,
       pageWidth / 2,
-      168,
+      169.3,
       { align: 'center', url: `https://wa.me/${waNumber}` }
     )
   }
 
   // ── CONFIGURACIÓN DE PRODUCTOS ──
   pdf.addPage()
+  drawPageHeader(pdf, margin, pageWidth)
   
-  let currentY = margin
+  let currentY = margin + 18
 
   for (let i = 0; i < products.length; i++) {
     const product = products[i]
@@ -74,7 +91,8 @@ export const generateCatalogPDF = async (
     if (col === 0 && i !== 0) {
       if (currentY + cardHeight + rowGap > pageHeight - margin - 15) {
         pdf.addPage()
-        currentY = margin
+        drawPageHeader(pdf, margin, pageWidth)
+        currentY = margin + 18
       } else {
         currentY += cardHeight + rowGap
       }
@@ -83,20 +101,20 @@ export const generateCatalogPDF = async (
     const currentX = margin + col * (cardWidth + colGap)
 
     const productUrl = `${storeUrl}/producto/${product.id}`
-    const message = `¡Hola! Me interesa este producto:\n\n${product.name}\nPrecio: CRC ${product.price.toLocaleString()}\n\n${productUrl}`
+    const message = `¡Hola! Me interesa este producto:\n\n${product.name}\nPrecio: ₡${product.price.toLocaleString()}\n\n${productUrl}`
     const waLink = `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`
 
     const mainImg = product.product_images?.find(img => img.is_main) || product.product_images?.[0]
 
-    // Sombra de la tarjeta
-    pdf.setFillColor(243, 244, 246)
-    pdf.roundedRect(currentX + 1, currentY + 1, cardWidth, cardHeight, 3, 3, 'F')
+    // Sombra sutil de la tarjeta
+    pdf.setFillColor(241, 245, 249) // Slate 100
+    pdf.roundedRect(currentX + 0.6, currentY + 0.6, cardWidth, cardHeight, 4, 4, 'F')
 
     // Fondo de la Tarjeta
     pdf.setFillColor(255, 255, 255)
-    pdf.setDrawColor(229, 231, 235) 
+    pdf.setDrawColor(226, 232, 240) // Slate 200
     pdf.setLineWidth(0.2)
-    pdf.roundedRect(currentX, currentY, cardWidth, cardHeight, 3, 3, 'FD')
+    pdf.roundedRect(currentX, currentY, cardWidth, cardHeight, 4, 4, 'FD')
 
     // ── Renderizado de Imagen con Ajuste de Proporción ──
     if (mainImg?.url) {
@@ -133,29 +151,29 @@ export const generateCatalogPDF = async (
     }
 
     // Nombre del Producto
-    pdf.setTextColor(17, 24, 39)
-    pdf.setFontSize(10)
+    pdf.setTextColor(15, 23, 42) // Slate 900
+    pdf.setFontSize(9)
     pdf.setFont('helvetica', 'bold')
-    const truncatedName = product.name.length > 22 ? product.name.slice(0, 22) + '...' : product.name
+    const truncatedName = product.name.length > 20 ? product.name.slice(0, 20) + '...' : product.name
     pdf.textWithLink(truncatedName, currentX + 5, currentY + imgHeight + 9, { url: productUrl })
 
     // Precio
-    pdf.setTextColor(79, 70, 229)
-    pdf.setFontSize(10)
+    pdf.setTextColor(99, 102, 241) // Accent Indigo
+    pdf.setFontSize(9.5)
     pdf.setFont('helvetica', 'bold')
-    pdf.text(`CRC ${product.price.toLocaleString()}`, currentX + 5, currentY + imgHeight + 16)
+    pdf.text(`₡${product.price.toLocaleString()}`, currentX + 5, currentY + imgHeight + 15.5)
 
     // Botón de Acción WhatsApp
-    pdf.setFillColor(16, 185, 129)
-    pdf.roundedRect(currentX + 5, currentY + imgHeight + 22, cardWidth - 10, 8, 1.5, 1.5, 'F')
+    pdf.setFillColor(16, 185, 129) // Emerald
+    pdf.roundedRect(currentX + 5, currentY + imgHeight + 21, cardWidth - 10, 8.5, 2, 2, 'F')
     
     pdf.setTextColor(255, 255, 255)
-    pdf.setFontSize(8)
+    pdf.setFontSize(7.5)
     pdf.setFont('helvetica', 'bold')
     pdf.textWithLink(
       'Pedir por WhatsApp →',
       currentX + (cardWidth / 2),
-      currentY + imgHeight + 27.3,
+      currentY + imgHeight + 26.8,
       { align: 'center', url: waLink }
     )
   }
@@ -167,19 +185,35 @@ export const generateCatalogPDF = async (
     
     pdf.setPage(p)
     
-    pdf.setDrawColor(243, 244, 246)
-    pdf.setLineWidth(0.5)
+    pdf.setDrawColor(226, 232, 240)
+    pdf.setLineWidth(0.2)
     pdf.line(margin, pageHeight - 14, pageWidth - margin, pageHeight - 14)
 
-    pdf.setTextColor(107, 114, 128)
-    pdf.setFontSize(8)
+    pdf.setTextColor(148, 163, 184)
+    pdf.setFontSize(7)
     pdf.setFont('helvetica', 'normal')
     
-    pdf.text(`CamisasShop  |  ${storeUrl.replace(/^https?:\/\//, '')}`, margin, pageHeight - 8)
-    pdf.text(`Página ${p} de ${totalPages}`, pageWidth - margin, pageHeight - 8, { align: 'right' })
+    pdf.text(`CamisasShop  |  ${storeUrl.replace(/^https?:\/\//, '')}`, margin, pageHeight - 9)
+    pdf.text(`Página ${p} de ${totalPages}`, pageWidth - margin, pageHeight - 9, { align: 'right' })
   }
 
   pdf.save('catalogo-camisas.pdf')
+}
+
+const drawPageHeader = (pdf: jsPDF, margin: number, pageWidth: number) => {
+  pdf.setTextColor(99, 102, 241) // Accent Indigo
+  pdf.setFont('helvetica', 'bold')
+  pdf.setFontSize(8)
+  pdf.text('CAMISASSHOP', margin, margin + 4)
+  
+  pdf.setFont('helvetica', 'normal')
+  pdf.setTextColor(148, 163, 184) // Slate 400
+  pdf.setFontSize(6.5)
+  pdf.text('COLECCIÓN EXCLUSIVA', margin, margin + 8)
+
+  pdf.setDrawColor(226, 232, 240) // Slate 200
+  pdf.setLineWidth(0.2)
+  pdf.line(margin, margin + 10, pageWidth - margin, margin + 10)
 }
 
 const drawPlaceholder = (pdf: jsPDF, x: number, y: number, w: number, h: number) => {

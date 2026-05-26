@@ -29,10 +29,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (isMobile) {
     return (
-      <div style={{ minHeight: '100vh', background: '#f7f8fa', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ minHeight: '100vh', background: 'var(--bg-main)', display: 'flex', flexDirection: 'column' }}>
         <header style={styles.topbar}>
           <div style={styles.topbarLogo}>
-            <Shirt size={20} color="#fff" />
+            <div style={styles.mobileLogoBg}>
+              <Shirt size={16} color="#fff" />
+            </div>
             <span style={styles.topbarTitle}>CamisasAdmin</span>
           </div>
           <button style={styles.menuBtn} onClick={() => setMenuOpen(!menuOpen)}>
@@ -52,16 +54,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     onClick={() => handleNav(item.path)}
                     style={{
                       ...styles.drawerItem,
-                      background: active ? 'rgba(255,255,255,0.15)' : 'transparent',
+                      background: active ? 'linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0.03) 100%)' : 'transparent',
+                      borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
+                      borderRadius: active ? '0 8px 8px 0' : '8px',
                     }}
                   >
-                    <Icon size={20} color="#fff" />
-                    <span style={styles.drawerLabel}>{item.label}</span>
+                    <Icon size={18} color={active ? 'var(--accent)' : '#94a3b8'} />
+                    <span style={{ ...styles.drawerLabel, color: active ? '#fff' : '#cbd5e1', fontWeight: active ? 600 : 500 }}>{item.label}</span>
                   </button>
                 )
               })}
 
-              {/* ✅ FIX AQUÍ */}
               <a
                 href="/"
                 target="_blank"
@@ -69,19 +72,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 style={styles.drawerCatalogBtn}
                 onClick={() => setMenuOpen(false)}
               >
-                <Store size={20} color="#25d366" />
-                <span style={{ ...styles.drawerLabel, color: '#25d366' }}>Ver tienda</span>
+                <Store size={18} color="#10b981" />
+                <span style={{ ...styles.drawerLabel, color: '#10b981', fontWeight: 600 }}>Ver tienda</span>
               </a>
 
               <button style={styles.drawerLogout} onClick={handleLogout}>
-                <LogOut size={20} color="#fff" />
-                <span style={styles.drawerLabel}>Cerrar sesión</span>
+                <LogOut size={18} color="#f43f5e" />
+                <span style={{ ...styles.drawerLabel, color: '#f43f5e', fontWeight: 500 }}>Cerrar sesión</span>
               </button>
             </nav>
           </div>
         )}
 
-        <main style={{ flex: 1, padding: '1.25rem', overflowX: 'hidden' }}>
+        <main style={{ flex: 1, padding: '1.5rem', overflowX: 'hidden' }}>
           {children}
         </main>
       </div>
@@ -90,14 +93,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   return (
     <div style={styles.desktopWrapper}>
-      <aside style={{ ...styles.sidebar, width: sidebarOpen ? '240px' : '64px' }}>
+      <aside style={{ ...styles.sidebar, width: sidebarOpen ? '250px' : '72px' }}>
         <div style={styles.logo}>
-          <Shirt size={24} color="#fff" />
+          <div style={styles.logoIconBg}>
+            <Shirt size={20} color="#fff" />
+          </div>
           {sidebarOpen && <span style={styles.logoText}>CamisasAdmin</span>}
         </div>
 
         <button style={styles.toggleBtn} onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X size={18} color="#fff" /> : <Menu size={18} color="#fff" />}
+          {sidebarOpen ? <X size={16} color="#94a3b8" /> : <Menu size={16} color="#94a3b8" />}
         </button>
 
         <nav style={styles.nav}>
@@ -110,17 +115,27 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={() => navigate(item.path)}
                 style={{
                   ...styles.navItem,
-                  background: active ? 'rgba(255,255,255,0.15)' : 'transparent',
+                  background: active ? 'linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0.03) 100%)' : 'transparent',
+                  borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
+                  borderRadius: active ? '0 8px 8px 0' : '8px',
+                  paddingLeft: sidebarOpen ? '1rem' : '0.85rem',
                 }}
               >
-                <Icon size={20} color="#fff" />
-                {sidebarOpen && <span style={styles.navLabel}>{item.label}</span>}
+                <Icon size={18} color={active ? 'var(--accent)' : '#94a3b8'} />
+                {sidebarOpen && (
+                  <span style={{ 
+                    ...styles.navLabel, 
+                    color: active ? '#fff' : '#94a3b8',
+                    fontWeight: active ? 600 : 500 
+                  }}>
+                    {item.label}
+                  </span>
+                )}
               </button>
             )
           })}
         </nav>
 
-        {/* ✅ FIX AQUÍ */}
         <a
           href="/"
           target="_blank"
@@ -128,15 +143,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           style={styles.catalogBtn}
           title="Ver tienda"
         >
-          <Store size={20} color="#25d366" />
+          <Store size={18} color="#10b981" />
           {sidebarOpen && (
-            <span style={{ ...styles.navLabel, color: '#25d366' }}>Ver tienda</span>
+            <span style={{ ...styles.navLabel, color: '#10b981', fontWeight: 600 }}>Ver tienda</span>
           )}
         </a>
 
         <button style={styles.logoutBtn} onClick={handleLogout}>
-          <LogOut size={20} color="#fff" />
-          {sidebarOpen && <span style={styles.navLabel}>Cerrar sesión</span>}
+          <LogOut size={18} color="#f43f5e" />
+          {sidebarOpen && <span style={{ ...styles.navLabel, color: '#f43f5e', fontWeight: 500 }}>Cerrar sesión</span>}
         </button>
       </aside>
 
@@ -152,37 +167,49 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'row',
     minHeight: '100vh',
-    background: '#f7f8fa',
+    background: 'var(--bg-main)',
   },
   sidebar: {
-    background: '#1a1a2e',
+    background: 'linear-gradient(180deg, #0b0f19 0%, #0f172a 100%)',
     display: 'flex',
     flexDirection: 'column',
-    transition: 'width 0.2s ease',
+    transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
     position: 'sticky',
     top: 0,
     height: '100vh',
     overflow: 'hidden',
     flexShrink: 0,
+    borderRight: '1px solid rgba(255, 255, 255, 0.05)',
   },
   logo: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.75rem',
-    padding: '1.25rem 1rem',
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    padding: '1.5rem 1rem 1rem',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
+  },
+  logoIconBg: {
+    background: 'var(--accent)',
+    padding: '0.4rem',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)',
   },
   logoText: {
     color: '#fff',
-    fontWeight: 700,
-    fontSize: '1rem',
+    fontWeight: 800,
+    fontSize: '1.05rem',
     whiteSpace: 'nowrap',
+    letterSpacing: '-0.3px',
   },
   toggleBtn: {
-    background: 'transparent',
+    background: 'rgba(255,255,255,0.02)',
     border: 'none',
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
     cursor: 'pointer',
-    padding: '0.75rem 1rem',
+    padding: '0.6rem 1rem',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -190,56 +217,57 @@ const styles: Record<string, React.CSSProperties> = {
   nav: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.25rem',
-    padding: '0.5rem',
+    gap: '0.4rem',
+    padding: '1rem 0.5rem 1rem 0',
     flex: 1,
   },
   navItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
-    padding: '0.65rem 0.75rem',
+    gap: '0.85rem',
+    padding: '0.7rem 1rem',
     border: 'none',
-    borderRadius: '6px',
     cursor: 'pointer',
-    transition: 'background 0.15s',
+    transition: 'all 0.2s',
     whiteSpace: 'nowrap',
   },
   navLabel: {
-    color: '#fff',
     fontSize: '0.9rem',
+    transition: 'color 0.2s',
   },
   catalogBtn: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
-    padding: '0.75rem 1.25rem',
-    background: 'rgba(37,211,102,0.08)',
+    gap: '0.85rem',
+    padding: '0.9rem 1.25rem',
+    background: 'rgba(16, 185, 129, 0.05)',
     border: 'none',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
+    borderTop: '1px solid rgba(255,255,255,0.05)',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
     textDecoration: 'none',
+    transition: 'all 0.25s',
   },
   logoutBtn: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
-    padding: '0.75rem 1.25rem',
-    background: 'transparent',
+    gap: '0.85rem',
+    padding: '0.9rem 1.25rem',
+    background: 'rgba(239, 68, 68, 0.02)',
     border: 'none',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
+    borderTop: '1px solid rgba(255,255,255,0.05)',
     cursor: 'pointer',
     whiteSpace: 'nowrap',
+    transition: 'all 0.25s',
   },
   main: {
     flex: 1,
-    padding: '2rem',
+    padding: '2.5rem',
     overflow: 'auto',
     minWidth: 0,
   },
   topbar: {
-    background: '#1a1a2e',
+    background: '#0b0f19',
     padding: '0.85rem 1.25rem',
     display: 'flex',
     justifyContent: 'space-between',
@@ -247,16 +275,25 @@ const styles: Record<string, React.CSSProperties> = {
     position: 'sticky',
     top: 0,
     zIndex: 100,
+    borderBottom: '1px solid rgba(255,255,255,0.05)',
   },
   topbarLogo: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
   },
+  mobileLogoBg: {
+    background: 'var(--accent)',
+    padding: '0.35rem',
+    borderRadius: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   topbarTitle: {
     color: '#fff',
-    fontWeight: 700,
-    fontSize: '1rem',
+    fontWeight: 800,
+    fontSize: '0.95rem',
   },
   menuBtn: {
     background: 'transparent',
@@ -266,43 +303,42 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
   },
   drawer: {
-    background: '#1a1a2e',
+    background: '#0b0f19',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
-    top: '52px',
+    top: '50px',
     left: 0,
     right: 0,
     zIndex: 99,
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    borderBottom: '1px solid rgba(255,255,255,0.08)',
+    boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
   },
   drawerNav: {
     display: 'flex',
     flexDirection: 'column',
-    padding: '0.5rem',
-    gap: '0.25rem',
+    padding: '0.75rem',
+    gap: '0.4rem',
   },
   drawerItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
+    gap: '0.85rem',
     padding: '0.75rem 1rem',
-    background: 'transparent',
     border: 'none',
-    borderRadius: '8px',
     cursor: 'pointer',
-    fontSize: '0.95rem',
+    fontSize: '0.92rem',
+    transition: 'all 0.2s',
   },
   drawerLabel: {
-    color: '#fff',
-    fontSize: '0.95rem',
+    fontSize: '0.92rem',
   },
   drawerCatalogBtn: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
+    gap: '0.85rem',
     padding: '0.75rem 1rem',
-    background: 'rgba(37,211,102,0.1)',
+    background: 'rgba(16, 185, 129, 0.08)',
     border: 'none',
     borderRadius: '8px',
     cursor: 'pointer',
@@ -311,11 +347,11 @@ const styles: Record<string, React.CSSProperties> = {
   drawerLogout: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
+    gap: '0.85rem',
     padding: '0.85rem 1rem',
     background: 'transparent',
     border: 'none',
-    borderTop: '1px solid rgba(255,255,255,0.1)',
+    borderTop: '1px solid rgba(255,255,255,0.05)',
     cursor: 'pointer',
     width: '100%',
   },

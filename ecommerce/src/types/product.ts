@@ -14,5 +14,5 @@ export interface Product {
   colors: string[]
   stock: number
   created_at: string
-  product_images: ProductImage[]
+  product_images?: ProductImage[]
 }

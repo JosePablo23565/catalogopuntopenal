@@ -13,16 +13,15 @@ export default function ProductCard({ product }: Props) {
   return (
     <div
       className="product-card"
-      style={styles.card}
       onClick={() => navigate(`/producto/${product.id}`)}
     >
       <div style={styles.imgWrapper}>
         {imageUrl ? (
-          <img src={imageUrl} alt={product.name} style={styles.img} />
+          <img src={imageUrl} alt={product.name} className="product-card-img" />
         ) : (
           <div style={styles.noImg}>
-            <span style={{ fontSize: '2rem' }}>👕</span>
-            <span style={{ fontSize: '0.8rem', color: '#bbb' }}>Sin imagen</span>
+            <span style={{ fontSize: '2.5rem' }}>👕</span>
+            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 500 }}>Sin imagen</span>
           </div>
         )}
 
@@ -48,7 +47,7 @@ export default function ProductCard({ product }: Props) {
 
         <div style={styles.footer}>
           <p style={styles.price}>₡{product.price.toLocaleString()}</p>
-          <span style={styles.viewBtn}>Ver →</span>
+          <span style={styles.viewBtn}>Ver detalles →</span>
         </div>
       </div>
     </div>
@@ -56,27 +55,13 @@ export default function ProductCard({ product }: Props) {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  card: {
-    background: '#fff',
-    borderRadius: '14px',
-    overflow: 'hidden',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-    cursor: 'pointer',
-    transition: 'transform 0.25s ease, box-shadow 0.25s ease',
-  },
   imgWrapper: {
     width: '100%',
     aspectRatio: '3/4',
     overflow: 'hidden',
-    background: '#f5f5f5',
+    background: '#f1f5f9',
     position: 'relative',
-  },
-  img: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    transition: 'transform 0.35s ease',
-    display: 'block',
+    borderBottom: '1px solid rgba(226, 232, 240, 0.6)',
   },
   noImg: {
     width: '100%',
@@ -86,62 +71,70 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: '0.5rem',
-    background: '#fafafa',
+    background: '#f8fafc',
   },
   outOfStock: {
     position: 'absolute',
     top: '12px',
     right: '12px',
-    background: 'rgba(0,0,0,0.7)',
+    background: 'rgba(239, 68, 68, 0.9)',
     color: '#fff',
-    fontSize: '0.72rem',
-    fontWeight: 600,
-    padding: '3px 10px',
+    fontSize: '0.7rem',
+    fontWeight: 700,
+    padding: '4px 10px',
     borderRadius: '20px',
     letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+    boxShadow: '0 4px 12px rgba(239, 68, 68, 0.25)',
   },
   info: {
-    padding: '1rem 1.1rem 1.1rem',
+    padding: '1.1rem 1.2rem 1.2rem',
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.4rem',
+    gap: '0.45rem',
   },
   name: {
-    fontSize: '0.95rem',
+    fontSize: '0.98rem',
     fontWeight: 700,
-    color: '#1a1a2e',
+    color: 'var(--text-main)',
+    lineHeight: '1.3',
   },
   colors: {
     fontSize: '0.78rem',
-    color: '#999',
+    color: 'var(--text-muted)',
+    fontWeight: 500,
   },
   sizes: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '0.25rem',
+    gap: '0.3rem',
+    marginTop: '0.1rem',
   },
   sizeTag: {
-    fontSize: '0.68rem',
-    padding: '2px 7px',
-    background: '#f0f0f0',
-    borderRadius: '20px',
-    color: '#666',
-    fontWeight: 500,
+    fontSize: '0.7rem',
+    padding: '3px 8px',
+    background: 'var(--bg-main)',
+    borderRadius: '6px',
+    color: 'var(--text-muted)',
+    fontWeight: 600,
+    border: '1px solid var(--border-color)',
   },
   footer: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: '0.25rem',
+    marginTop: '0.5rem',
+    paddingTop: '0.5rem',
+    borderTop: '1px solid rgba(226, 232, 240, 0.4)',
   },
   price: {
-    fontSize: '1.05rem',
+    fontSize: '1.1rem',
     fontWeight: 800,
-    color: '#1a1a2e',
+    color: 'var(--accent)',
   },
   viewBtn: {
     fontSize: '0.8rem',
-    color: '#888',
-    fontWeight: 500,
+    color: 'var(--accent)',
+    fontWeight: 600,
   },
 }

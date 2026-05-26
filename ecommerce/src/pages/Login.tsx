@@ -52,12 +52,13 @@ export default function Login() {
       <div style={styles.card}>
         {/* Logo */}
         <div style={styles.logoBox}>
-          <Shirt size={32} color="#1a1a2e" />
+          <div style={styles.logoIconBg}>
+            <Shirt size={28} color="#fff" />
+          </div>
           <h2 style={styles.title}>CamisasAdmin</h2>
-          
         </div>
 
-        <p style={styles.subtitle}>Ingresá a tu panel</p>
+        <p style={styles.subtitle}>Ingresá a tu panel de control</p>
 
         <form onSubmit={handleLogin} style={styles.form}>
           <div style={styles.field}>
@@ -101,12 +102,12 @@ export default function Login() {
             {loading ? 'Ingresando...' : 'Ingresar'}
           </button>
           <button
-  type="button"
-  style={styles.catalogBtn}
-  onClick={() => navigate('/')}
->
-  Ver catálogo →
-</button>
+            type="button"
+            style={styles.catalogBtn}
+            onClick={() => navigate('/')}
+          >
+            ← Volver al catálogo
+          </button>
         </form>
       </div>
     </div>
@@ -119,101 +120,122 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#f7f8fa',
-    padding: '1rem',
+    background: 'radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 45%), radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.12) 0%, transparent 45%), #070a13',
+    padding: '1.5rem',
   },
   card: {
-    background: 'white',
-    padding: '2.5rem',
-    borderRadius: '14px',
-    boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+    background: 'rgba(255, 255, 255, 0.03)',
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    padding: '3rem 2.5rem',
+    borderRadius: '24px',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3)',
     width: '100%',
-    maxWidth: '400px',
+    maxWidth: '420px',
   },
   logoBox: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '0.5rem',
-    marginBottom: '0.5rem',
+    gap: '0.65rem',
+    marginBottom: '0.65rem',
+  },
+  logoIconBg: {
+    background: 'var(--accent)',
+    padding: '0.45rem',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 4px 10px rgba(99, 102, 241, 0.35)',
   },
   title: {
-    fontSize: '1.4rem',
+    fontSize: '1.5rem',
     fontWeight: 800,
-    color: '#1a1a2e',
+    color: '#fff',
     margin: 0,
+    letterSpacing: '-0.3px',
   },
   subtitle: {
     textAlign: 'center',
-    color: '#888',
+    color: '#94a3b8',
     fontSize: '0.9rem',
-    marginBottom: '1.75rem',
+    marginBottom: '2rem',
+    fontWeight: 500,
   },
   form: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '1rem',
+    gap: '1.25rem',
   },
   field: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.35rem',
+    gap: '0.45rem',
   },
   label: {
-    fontWeight: 600,
-    fontSize: '0.875rem',
-    color: '#444',
+    fontWeight: 700,
+    fontSize: '0.85rem',
+    color: '#cbd5e1',
   },
   input: {
-    padding: '0.65rem 0.85rem',
-    borderRadius: '8px',
-    border: '1px solid #ddd',
+    padding: '0.7rem 0.95rem',
+    borderRadius: '10px',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    background: 'rgba(255, 255, 255, 0.05)',
+    color: '#fff',
     fontSize: '0.95rem',
     outline: 'none',
-    transition: 'border-color 0.2s',
   },
   rememberRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.5rem',
+    gap: '0.55rem',
     cursor: 'pointer',
+    marginTop: '0.1rem',
   },
   checkbox: {
     width: '16px',
     height: '16px',
     cursor: 'pointer',
-    accentColor: '#1a1a2e',
+    accentColor: 'var(--accent)',
   },
   rememberText: {
-    fontSize: '0.875rem',
-    color: '#555',
+    fontSize: '0.85rem',
+    color: '#94a3b8',
+    fontWeight: 500,
   },
   button: {
-    padding: '0.75rem',
-    background: '#1a1a2e',
+    padding: '0.78rem',
+    background: 'var(--accent)',
     color: 'white',
     border: 'none',
-    borderRadius: '8px',
-    fontSize: '1rem',
-    fontWeight: 600,
+    borderRadius: '10px',
+    fontSize: '0.98rem',
+    fontWeight: 700,
     cursor: 'pointer',
-    marginTop: '0.25rem',
+    marginTop: '0.5rem',
+    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
   },
   error: {
-    color: '#dc2626',
-    fontSize: '0.875rem',
-    background: '#fee2e2',
-    padding: '0.5rem 0.75rem',
-    borderRadius: '6px',
+    color: '#f43f5e',
+    fontSize: '0.88rem',
+    background: 'rgba(244, 63, 94, 0.1)',
+    padding: '0.5rem 0.85rem',
+    borderRadius: '8px',
+    border: '1px solid rgba(244, 63, 94, 0.15)',
+    margin: 0,
   },
   catalogBtn: {
-  background: 'transparent',
-  border: 'none',
-  color: '#888',
-  fontSize: '0.875rem',
-  cursor: 'pointer',
-  marginTop: '0.25rem',
-  textDecoration: 'underline',
-},
-
+    background: 'transparent',
+    border: 'none',
+    color: '#94a3b8',
+    fontSize: '0.85rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    marginTop: '0.4rem',
+    transition: 'color 0.2s',
+    textAlign: 'center',
+  },
 }
