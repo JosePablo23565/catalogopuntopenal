@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import AdminLayout from '../components/AdminLayout'
 import { createProduct, getProductById, updateProduct } from '../services/productService'
 import { uploadImage } from '../services/productService'
+import { processImage } from '../hooks/useImageProcessor'
 import { ArrowLeft, Save, Upload, Trash2, Star } from 'lucide-react'
 
 const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
@@ -71,15 +72,15 @@ export default function ProductForm() {
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     const newImages: LocalImage[] = files
-      .filter(f => f.size <= 5 * 1024 * 1024)
+      .filter(f => f.size <= 20 * 1024 * 1024)
       .map((file, i) => ({
         file,
         preview: URL.createObjectURL(file),
         isMain: localImages.length === 0 && i === 0,
       }))
 
-    if (files.some(f => f.size > 5 * 1024 * 1024)) {
-      setError('Algunas imágenes superan 5MB y fueron ignoradas')
+    if (files.some(f => f.size > 20 * 1024 * 1024)) {
+      setError('Algunas imágenes superan 20MB y fueron ignoradas')
     } else {
       setError('')
     }
@@ -129,9 +130,14 @@ export default function ProductForm() {
         productId = created.id
       }
 
-      // Subir imágenes nuevas
+      // Subir imágenes nuevas (recortadas en cuadrado y comprimidas)
       for (const img of localImages) {
-        const url = await uploadImage(img.file, productId!)
+        const processed = await processImage(img.file, {
+          maxSize: 1200,
+          quality: 0.82,
+          format: 'image/webp',
+        })
+        const url = await uploadImage(processed, productId!)
         await import('../services/productService').then(m =>
           m.saveProductImage(productId!, url, img.isMain)
         )
@@ -172,7 +178,7 @@ export default function ProductForm() {
             />
             <Upload size={26} color="#888" />
             <p style={styles.uploadText}>Hacé click para agregar imágenes</p>
-            <span style={styles.uploadHint}>PNG, JPG hasta 5MB · Podés seleccionar varias</span>
+            <span style={styles.uploadHint}>PNG, JPG hasta 20MB · Se recortan en cuadrado y comprimen automáticamente</span>
           </label>
 
           {/* Previews locales */}

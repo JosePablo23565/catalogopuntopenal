@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Upload, Trash2, Star } from 'lucide-react'
 import { uploadImage, saveProductImage, deleteProductImage, setMainImage } from '../services/productService'
+import { processImage } from '../hooks/useImageProcessor'
 import type { ProductImage } from '../types/product'
 
 interface Props {
@@ -11,6 +12,7 @@ interface Props {
 
 export default function ImageUploader({ productId, images, onUpdate }: Props) {
   const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState('')
   const [error, setError] = useState('')
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,13 +23,26 @@ export default function ImageUploader({ productId, images, onUpdate }: Props) {
     setError('')
 
     try {
-      for (const file of files) {
-        if (file.size > 5 * 1024 * 1024) {
-          setError('Cada imagen debe pesar menos de 5MB')
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+
+        if (file.size > 20 * 1024 * 1024) {
+          setError(`"${file.name}" supera 20 MB y fue ignorada`)
           continue
         }
-        const url = await uploadImage(file, productId)
-        const isMain = images.length === 0
+
+        setProgress(`Procesando ${i + 1} de ${files.length}...`)
+
+        // Recortar en cuadrado y comprimir antes de subir
+        const processed = await processImage(file, {
+          maxSize: 1200,
+          quality: 0.82,
+          format: 'image/webp',
+        })
+
+        setProgress(`Subiendo ${i + 1} de ${files.length}...`)
+        const url = await uploadImage(processed, productId)
+        const isMain = images.length === 0 && i === 0
         await saveProductImage(productId, url, isMain)
       }
       onUpdate()
@@ -35,6 +50,7 @@ export default function ImageUploader({ productId, images, onUpdate }: Props) {
       setError('Error al subir imagen')
     } finally {
       setUploading(false)
+      setProgress('')
       e.target.value = ''
     }
   }
@@ -62,7 +78,11 @@ export default function ImageUploader({ productId, images, onUpdate }: Props) {
     <div style={styles.wrapper}>
       <h3 style={styles.sectionTitle}>Imágenes del producto</h3>
 
-      <label style={styles.uploadArea}>
+      <label style={{
+        ...styles.uploadArea,
+        opacity: uploading ? 0.6 : 1,
+        cursor: uploading ? 'not-allowed' : 'pointer',
+      }}>
         <input
           type="file"
           accept="image/*"
@@ -73,9 +93,13 @@ export default function ImageUploader({ productId, images, onUpdate }: Props) {
         />
         <Upload size={28} color="#888" />
         <p style={styles.uploadText}>
-          {uploading ? 'Subiendo...' : 'Hacé click o arrastrá imágenes aquí'}
+          {uploading ? progress : 'Hacé click o arrastrá imágenes aquí'}
         </p>
-        <span style={styles.uploadHint}>PNG, JPG hasta 5MB</span>
+        <span style={styles.uploadHint}>
+          {uploading
+            ? 'Recortando al cuadrado y comprimiendo para web...'
+            : 'PNG, JPG hasta 20MB · Se recortan en cuadrado y se comprimen automáticamente'}
+        </span>
       </label>
 
       {error && <p style={styles.error}>{error}</p>}
@@ -149,6 +173,7 @@ const styles: Record<string, React.CSSProperties> = {
   uploadHint: {
     color: '#aaa',
     fontSize: '0.8rem',
+    textAlign: 'center',
   },
   error: {
     color: 'red',
