@@ -8,11 +8,10 @@ export interface ProductImage {
 export interface Product {
   id: string
   name: string
-  description: string
   price: number
-  sizes: string[]
-  colors: string[]
-  stock: number
+  league: string
+  category: string
+  season: string
   created_at: string
   product_images?: ProductImage[]
 }

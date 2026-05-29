@@ -7,10 +7,14 @@ import { Plus, Pencil, Trash2, FileDown } from 'lucide-react'
 import { useIsMobile } from '../hooks/useIsMobile'
 import { generateCatalogPDF } from '../services/pdfService'
 
+
+const PRODUCTS_PER_PAGE = 36
+
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [exporting, setExporting] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1)
   const navigate = useNavigate()
   const isMobile = useIsMobile()
 
@@ -19,6 +23,7 @@ export default function ProductList() {
     try {
       const data = await getProducts()
       setProducts(data)
+      setCurrentPage(1)
     } finally {
       setLoading(false)
     }
@@ -43,6 +48,38 @@ export default function ProductList() {
     } finally {
       setExporting(false)
     }
+  }
+
+  const totalProducts = products.length
+  const totalPages = Math.ceil(totalProducts / PRODUCTS_PER_PAGE)
+  const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE
+  const endIndex = Math.min(startIndex + PRODUCTS_PER_PAGE, totalProducts)
+  const paginatedProducts = products.slice(startIndex, endIndex)
+
+  const getPageNumbers = () => {
+    const delta = 2
+    const range = []
+    const rangeWithDots = []
+    let l
+
+    for (let i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+        range.push(i)
+      }
+    }
+
+    for (let i of range) {
+      if (l) {
+        if (i - l === 2) {
+          rangeWithDots.push(l + 1)
+        } else if (i - l !== 1) {
+          rangeWithDots.push('...')
+        }
+      }
+      rangeWithDots.push(i)
+      l = i
+    }
+    return rangeWithDots
   }
 
   return (
@@ -83,71 +120,29 @@ export default function ProductList() {
         <div style={styles.empty}>
           <p>Aún no hay productos. ¡Creá el primero!</p>
         </div>
-      ) : isMobile ? (
-        // ── VISTA MÓVIL: cards ──
-        <div style={styles.cardList}>
-          {products.map((p: any) => {
-            const img = p.product_images?.find((i: any) => i.is_main) || p.product_images?.[0]
-            return (
-              <div key={p.id} style={styles.mobileCard}>
-                <div style={styles.mobileImgBox}>
-                  {img
-                    ? <img src={img.url} alt={p.name} style={styles.mobileImg} />
-                    : <span style={{ fontSize: '1.5rem' }}>👕</span>
-                  }
-                </div>
-                <div style={styles.mobileInfo}>
-                  <p style={styles.mobileName}>{p.name}</p>
-                  <p style={styles.mobilePrice}>₡{p.price.toLocaleString()}</p>
-                  <span style={{
-                    ...styles.stockBadge,
-                    background: p.stock > 0 ? 'var(--success-light)' : 'var(--danger-light)',
-                    color: p.stock > 0 ? 'var(--success)' : 'var(--danger)',
-                    borderColor: p.stock > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                  }}>
-                    {p.stock > 0 ? `${p.stock} uds` : 'Agotado'}
-                  </span>
-                </div>
-                <div style={styles.mobileActions}>
-                  <button
-                    style={styles.editBtn}
-                    onClick={() => navigate(`/admin/productos/editar/${p.id}`)}
-                  >
-                    <Pencil size={15} />
-                  </button>
-                  <button
-                    style={styles.deleteBtn}
-                    onClick={() => handleDelete(p.id)}
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </div>
-            )
-          })}
-        </div>
       ) : (
-        // ── VISTA DESKTOP: tabla ──
-        <div style={styles.tableWrapper}>
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Nombre</th>
-                <th style={styles.th}>Precio</th>
-                <th style={styles.th}>Stock</th>
-                <th style={styles.th}>Tallas</th>
-                <th style={styles.th}>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map(p => (
-                <tr key={p.id} style={styles.tr}>
-                  <td style={styles.td}>{p.name}</td>
-                  <td style={styles.td}>₡{p.price.toLocaleString()}</td>
-                  <td style={styles.td}>{p.stock}</td>
-                  <td style={styles.td}>{p.sizes?.join(', ') || '—'}</td>
-                  <td style={styles.td}>
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <>
+          <div style={styles.paginationInfo}>
+            <p>Mostrando {startIndex + 1}-{endIndex} de {totalProducts} productos</p>
+          </div>
+
+          {isMobile ? (
+            <div style={styles.cardList}>
+              {paginatedProducts.map((p: any) => {
+                const img = p.product_images?.find((i: any) => i.is_main) || p.product_images?.[0]
+                return (
+                  <div key={p.id} style={styles.mobileCard}>
+                    <div style={styles.mobileImgBox}>
+                      {img
+                        ? <img src={img.url} alt={p.name} style={styles.mobileImg} />
+                        : <span style={{ fontSize: '1.5rem' }}>👕</span>
+                      }
+                    </div>
+                    <div style={styles.mobileInfo}>
+                      <p style={styles.mobileName}>{p.name}</p>
+                      <p style={styles.mobilePrice}>₡{p.price.toLocaleString()}</p>
+                    </div>
+                    <div style={styles.mobileActions}>
                       <button
                         style={styles.editBtn}
                         onClick={() => navigate(`/admin/productos/editar/${p.id}`)}
@@ -161,12 +156,73 @@ export default function ProductList() {
                         <Trash2 size={15} />
                       </button>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div style={styles.tableWrapper}>
+              <table style={styles.table}>
+                <thead>
+                  <tr>
+                    <th style={styles.th}>Nombre</th>
+                    <th style={styles.th}>Precio</th>
+                    <th style={styles.th}>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedProducts.map(p => (
+                    <tr key={p.id} style={styles.tr}>
+                      <td style={styles.td}>{p.name}</td>
+                      <td style={styles.td}>₡{p.price.toLocaleString()}</td>
+                      <td style={styles.td}>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          <button
+                            style={styles.editBtn}
+                            onClick={() => navigate(`/admin/productos/editar/${p.id}`)}
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          <button
+                            style={styles.deleteBtn}
+                            onClick={() => handleDelete(p.id)}
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* PAGINACIÓN SOLO NÚMEROS */}
+          {totalPages > 1 && (
+            <div style={styles.pagination}>
+              {getPageNumbers().map((page, idx) => (
+                typeof page === 'number' ? (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentPage(page)}
+                    style={{
+                      ...styles.numberBtn,
+                      background: currentPage === page ? '#0f172a' : '#fff',
+                      color: currentPage === page ? '#fff' : '#0f172a',
+                      borderColor: '#e2e8f0',
+                      fontWeight: currentPage === page ? 700 : 400,
+                    }}
+                  >
+                    {page}
+                  </button>
+                ) : (
+                  <span key={idx} style={styles.dots}>...</span>
+                )
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+          )}
+        </>
       )}
     </AdminLayout>
   )
@@ -220,6 +276,12 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--text-muted)',
     boxShadow: 'var(--card-shadow)',
   },
+  paginationInfo: {
+    marginBottom: '1rem',
+    textAlign: 'right',
+    fontSize: '0.85rem',
+    color: 'var(--text-muted)',
+  },
   cardList: {
     display: 'flex',
     flexDirection: 'column',
@@ -251,14 +313,6 @@ const styles: Record<string, React.CSSProperties> = {
   mobileInfo: { flex: 1, display: 'flex', flexDirection: 'column', gap: '0.25rem' },
   mobileName: { fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)', margin: 0 },
   mobilePrice: { fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 600, margin: 0 },
-  stockBadge: {
-    fontSize: '0.72rem',
-    fontWeight: 700,
-    padding: '3px 10px',
-    borderRadius: '20px',
-    alignSelf: 'flex-start',
-    border: '1px solid transparent',
-  },
   mobileActions: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
   tableWrapper: {
     background: '#fff',
@@ -299,5 +353,34 @@ const styles: Record<string, React.CSSProperties> = {
     color: 'var(--danger)',
     display: 'flex',
     transition: 'all 0.2s',
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: '0.5rem',
+    marginTop: '2rem',
+    paddingTop: '1rem',
+    borderTop: '1px solid var(--border-color)',
+    flexWrap: 'wrap',
+  },
+  numberBtn: {
+    minWidth: '36px',
+    height: '36px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: '1px solid #e2e8f0',
+    borderRadius: '8px',
+    fontSize: '0.9rem',
+    fontWeight: 500,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    background: '#fff',
+  },
+  dots: {
+    padding: '0 0.25rem',
+    color: '#94a3b8',
+    fontSize: '0.9rem',
   },
 }

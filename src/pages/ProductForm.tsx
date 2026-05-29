@@ -6,8 +6,41 @@ import { uploadImage } from '../services/productService'
 import { processImage } from '../hooks/useImageProcessor'
 import { ArrowLeft, Save, Upload, Trash2, Star } from 'lucide-react'
 
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
-const COLORS = ['Blanco', 'Negro', 'Azul', 'Rojo', 'Verde', 'Gris', 'Amarillo']
+// ============================================
+// OPCIONES PARA LOS FILTROS
+// ============================================
+
+// FUTBOL
+const FOOTBALL_LEAGUES = [
+  'Premier League',
+  'La Liga',
+  'Serie A',
+  'Bundesliga',
+  'Ligue 1'
+]
+
+// NBA
+const NBA_TEAMS = [
+  'Lakers',
+  'Celtics',
+  'Bulls',
+  'Warriors',
+  'Heat',
+  'Knicks'
+]
+
+// F1
+const F1_TEAMS = [
+  'Red Bull',
+  'Ferrari',
+  'Mercedes',
+  'McLaren',
+  'Aston Martin',
+  'Alpine'
+]
+
+// CATEGORIAS (siempre visibles)
+const CATEGORIES = ['Retro', 'Resto del Mundo', 'Selecciones']
 
 interface LocalImage {
   file: File
@@ -27,17 +60,13 @@ export default function ProductForm() {
 
   const [form, setForm] = useState({
     name: '',
-    description: '',
     price: '',
-    stock: '',
-    sizes: [] as string[],
-    colors: [] as string[],
+    league: '',
+    category: '',
+    season: ''
   })
 
-  // Para edición: imágenes ya guardadas
   const [savedImages, setSavedImages] = useState<any[]>([])
-
-  // Responsive helper
   const [isMobile, setIsMobile] = useState<boolean>(false)
 
   useEffect(() => {
@@ -53,11 +82,10 @@ export default function ProductForm() {
       getProductById(id).then(product => {
         setForm({
           name: product.name,
-          description: product.description || '',
           price: String(product.price),
-          stock: String(product.stock),
-          sizes: product.sizes || [],
-          colors: product.colors || [],
+          league: product.league || '',
+          category: product.category || '',
+          season: product.season || ''
         })
         setSavedImages(product.product_images || [])
         setLoading(false)
@@ -65,10 +93,6 @@ export default function ProductForm() {
     }
   }, [id])
 
-  const toggleItem = (list: string[], item: string) =>
-    list.includes(item) ? list.filter(i => i !== item) : [...list, item]
-
-  // Agregar imágenes locales antes de guardar
   const handleAddImages = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
     const newImages: LocalImage[] = files
@@ -92,7 +116,6 @@ export default function ProductForm() {
   const handleRemoveLocal = (index: number) => {
     setLocalImages(prev => {
       const updated = prev.filter((_, i) => i !== index)
-      // Si se eliminó la principal y quedan imágenes, la primera pasa a ser principal
       if (prev[index].isMain && updated.length > 0) {
         updated[0].isMain = true
       }
@@ -114,11 +137,10 @@ export default function ProductForm() {
     try {
       const payload = {
         name: form.name,
-        description: form.description,
         price: parseFloat(form.price),
-        stock: parseInt(form.stock),
-        sizes: form.sizes,
-        colors: form.colors,
+        league: form.league,
+        category: form.category,
+        season: form.season,
       }
 
       let productId = id
@@ -130,7 +152,6 @@ export default function ProductForm() {
         productId = created.id
       }
 
-      // Subir imágenes nuevas (recortadas en cuadrado y comprimidas)
       for (const img of localImages) {
         const processed = await processImage(img.file, {
           maxSize: 1200,
@@ -164,9 +185,9 @@ export default function ProductForm() {
 
       <form onSubmit={handleSubmit} style={styles.form}>
 
-        {/* ── SECCIÓN IMÁGENES ── */}
+        {/* SECCION IMAGENES */}
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>🖼️ Imágenes</h2>
+          <h2 style={styles.sectionTitle}>Imagenes</h2>
 
           <label style={styles.uploadArea}>
             <input
@@ -177,11 +198,10 @@ export default function ProductForm() {
               style={{ display: 'none' }}
             />
             <Upload size={26} color="#888" />
-            <p style={styles.uploadText}>Hacé click para agregar imágenes</p>
-            <span style={styles.uploadHint}>PNG, JPG hasta 20MB · Se recortan en cuadrado y comprimen automáticamente</span>
+            <p style={styles.uploadText}>Hace click para agregar imagenes</p>
+            <span style={styles.uploadHint}>PNG, JPG hasta 20MB · Se recortan en cuadrado y comprimen automaticamente</span>
           </label>
 
-          {/* Previews locales */}
           {localImages.length > 0 && (
             <div style={styles.grid}>
               {localImages.map((img, i) => (
@@ -212,11 +232,10 @@ export default function ProductForm() {
             </div>
           )}
 
-          {/* Imágenes ya guardadas (modo edición) */}
           {savedImages.length > 0 && (
             <>
               <p style={{ fontSize: '0.85rem', color: '#888', margin: '0.5rem 0' }}>
-                Imágenes actuales:
+                Imagenes actuales:
               </p>
               <div style={styles.grid}>
                 {savedImages.map(img => (
@@ -230,12 +249,12 @@ export default function ProductForm() {
           )}
         </div>
 
-        {/* ── SECCIÓN INFO ── */}
+        {/* SECCION INFO */}
         <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>📝 Información del producto</h2>
+          <h2 style={styles.sectionTitle}>Informacion del producto</h2>
 
           <div style={styles.field}>
-            <label style={styles.label}>Nombre *</label>
+            <label style={styles.label}>Nombre del producto *</label>
             <input
               style={styles.input}
               value={form.name}
@@ -245,85 +264,139 @@ export default function ProductForm() {
           </div>
 
           <div style={styles.field}>
-            <label style={styles.label}>Descripción</label>
-            <textarea
-              style={{ ...styles.input, minHeight: '100px', resize: 'vertical' }}
-              value={form.description}
-              onChange={e => setForm({ ...form, description: e.target.value })}
+            <label style={styles.label}>Precio (₡) *</label>
+            <input
+              style={styles.input}
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.price}
+              onChange={e => setForm({ ...form, price: e.target.value })}
+              required
             />
           </div>
 
-          <div style={{
-  ...styles.row,
-  flexDirection: isMobile ? 'column' : 'row',
-}}>
-  <div style={{ ...styles.field, flex: 1 }}>
-    <label style={styles.label}>Precio (₡) *</label>
-    <input
-      style={styles.input}
-      type="number"
-      min="0"
-      step="0.01"
-      value={form.price}
-      onChange={e => setForm({ ...form, price: e.target.value })}
-      required
-    />
-  </div>
-  <div style={{ ...styles.field, flex: 1 }}>
-    <label style={styles.label}>Stock *</label>
-    <input
-      style={styles.input}
-      type="number"
-      min="0"
-      value={form.stock}
-      onChange={e => setForm({ ...form, stock: e.target.value })}
-      required
-    />
-  </div>
-</div>
-
+          {/* DEPORTE / LIGA - BOTONES POR CATEGORIA */}
           <div style={styles.field}>
-            <label style={styles.label}>Tallas disponibles</label>
-            <div style={styles.tagGroup}>
-              {SIZES.map(size => (
+            <label style={styles.label}>Deporte / Liga</label>
+            
+            {/* FUTBOL */}
+            <div style={styles.sportGroup}>
+              <div style={styles.sportTitle}>Futbol</div>
+              <div style={styles.filterButtons}>
+                {FOOTBALL_LEAGUES.map(league => (
+                  <button
+                    key={league}
+                    type="button"
+                    onClick={() => setForm({ ...form, league })}
+                    style={{
+                      ...styles.filterChip,
+                      background: form.league === league ? 'var(--accent)' : '#f1f5f9',
+                      color: form.league === league ? '#fff' : 'var(--text-main)',
+                    }}
+                  >
+                    {league}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* NBA */}
+            <div style={styles.sportGroup}>
+              <div style={styles.sportTitle}>NBA</div>
+              <div style={styles.filterButtons}>
+                {NBA_TEAMS.map(team => (
+                  <button
+                    key={team}
+                    type="button"
+                    onClick={() => setForm({ ...form, league: team })}
+                    style={{
+                      ...styles.filterChip,
+                      background: form.league === team ? 'var(--accent)' : '#f1f5f9',
+                      color: form.league === team ? '#fff' : 'var(--text-main)',
+                    }}
+                  >
+                    {team}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* F1 */}
+            <div style={styles.sportGroup}>
+              <div style={styles.sportTitle}>F1</div>
+              <div style={styles.filterButtons}>
+                {F1_TEAMS.map(team => (
+                  <button
+                    key={team}
+                    type="button"
+                    onClick={() => setForm({ ...form, league: team })}
+                    style={{
+                      ...styles.filterChip,
+                      background: form.league === team ? 'var(--accent)' : '#f1f5f9',
+                      color: form.league === team ? '#fff' : 'var(--text-main)',
+                    }}
+                  >
+                    {team}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Boton para limpiar seleccion */}
+            {form.league && (
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, league: '' })}
+                style={styles.clearLeagueBtn}
+              >
+                Limpiar seleccion
+              </button>
+            )}
+          </div>
+
+          {/* CATEGORIA - TODAS SIEMPRE VISIBLES */}
+          <div style={styles.field}>
+            <label style={styles.label}>Categoria</label>
+            <div style={styles.filterButtons}>
+              <button
+                type="button"
+                onClick={() => setForm({ ...form, category: '' })}
+                style={{
+                  ...styles.filterChip,
+                  background: form.category === '' ? 'var(--accent)' : '#f1f5f9',
+                  color: form.category === '' ? '#fff' : 'var(--text-main)',
+                }}
+              >
+                Ninguna
+              </button>
+              {CATEGORIES.map(cat => (
                 <button
-                  key={size}
+                  key={cat}
                   type="button"
-                  onClick={() => setForm({ ...form, sizes: toggleItem(form.sizes, size) })}
+                  onClick={() => setForm({ ...form, category: cat })}
                   style={{
-                    ...styles.tag,
-                    background: form.sizes.includes(size) ? 'var(--accent)' : '#f1f5f9',
-                    color: form.sizes.includes(size) ? '#fff' : 'var(--text-muted)',
-                    boxShadow: form.sizes.includes(size) ? '0 4px 10px rgba(99, 102, 241, 0.2)' : 'none',
-                    borderColor: form.sizes.includes(size) ? 'var(--accent)' : 'transparent',
+                    ...styles.filterChip,
+                    background: form.category === cat ? 'var(--accent)' : '#f1f5f9',
+                    color: form.category === cat ? '#fff' : 'var(--text-main)',
                   }}
                 >
-                  {size}
+                  {cat}
                 </button>
               ))}
             </div>
           </div>
 
+          {/* TEMPORADA */}
           <div style={styles.field}>
-            <label style={styles.label}>Colores disponibles</label>
-            <div style={styles.tagGroup}>
-              {COLORS.map(color => (
-                <button
-                  key={color}
-                  type="button"
-                  onClick={() => setForm({ ...form, colors: toggleItem(form.colors, color) })}
-                  style={{
-                    ...styles.tag,
-                    background: form.colors.includes(color) ? 'var(--accent)' : '#f1f5f9',
-                    color: form.colors.includes(color) ? '#fff' : 'var(--text-muted)',
-                    boxShadow: form.colors.includes(color) ? '0 4px 10px rgba(99, 102, 241, 0.2)' : 'none',
-                    borderColor: form.colors.includes(color) ? 'var(--accent)' : 'transparent',
-                  }}
-                >
-                  {color}
-                </button>
-              ))}
-            </div>
+            <label style={styles.label}>Temporada</label>
+            <input
+              style={styles.input}
+              type="text"
+              placeholder="Ej: 2024-2025, Otono 2024, Edicion Limitada"
+              value={form.season}
+              onChange={e => setForm({ ...form, season: e.target.value })}
+            />
           </div>
         </div>
 
@@ -440,7 +513,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '0.65rem',
     padding: '3px 8px',
     borderRadius: '20px',
-    fontWeight: 700,
     boxShadow: '0 2px 6px rgba(99,102,241,0.3)',
   },
   imgActions: {
@@ -473,10 +545,6 @@ const styles: Record<string, React.CSSProperties> = {
     flexDirection: 'column',
     gap: '0.45rem',
   },
-  row: {
-    display: 'flex',
-    gap: '1.25rem',
-  },
   label: {
     fontWeight: 700,
     fontSize: '0.88rem',
@@ -489,20 +557,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '0.95rem',
     outline: 'none',
     boxShadow: '0 2px 4px rgba(15,23,42,0.01)',
-  },
-  tagGroup: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '0.5rem',
-  },
-  tag: {
-    padding: '0.45rem 1rem',
-    borderRadius: '20px',
-    border: '1px solid var(--border-color)',
-    cursor: 'pointer',
-    fontSize: '0.85rem',
-    fontWeight: 600,
-    transition: 'all 0.2s',
   },
   saveBtn: {
     display: 'flex',
@@ -527,5 +581,47 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '6px',
     border: '1px solid rgba(239,68,68,0.15)',
     margin: 0,
+  },
+  sportGroup: {
+    marginBottom: '1rem',
+  },
+  sportTitle: {
+    fontSize: '0.75rem',
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    color: 'var(--text-muted)',
+    marginBottom: '0.5rem',
+  },
+  filterButtons: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+  },
+  filterChip: {
+    padding: '0.4rem 0.9rem',
+    borderRadius: '20px',
+    border: 'none',
+    fontSize: '0.8rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    color: 'var(--text-main)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.3rem',
+    background: '#f1f5f9',
+  },
+  clearLeagueBtn: {
+    marginTop: '0.5rem',
+    padding: '0.4rem 0.8rem',
+    background: 'transparent',
+    border: '1px solid var(--danger)',
+    borderRadius: '8px',
+    color: 'var(--danger)',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    cursor: 'pointer',
+    textAlign: 'center',
   },
 }

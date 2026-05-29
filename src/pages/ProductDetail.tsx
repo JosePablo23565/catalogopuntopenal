@@ -73,14 +73,22 @@ export default function ProductDetail() {
 
           {/* ── Galería ── */}
           <div style={styles.gallery}>
-            {/* Imagen principal */}
+            {/* Imagen principal - MODIFICADA PARA VERSE COMPLETA */}
             <div style={{
               ...styles.mainImgWrapper,
-              aspectRatio: isMobile ? '4/3' : '3/4',
+              aspectRatio: isMobile ? '1/1' : '4/5',
               borderRadius: isMobile ? '10px' : '14px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#f8fafc',
             }}>
               {selectedImg ? (
-                <img src={selectedImg} alt={product.name} style={styles.mainImg} />
+                <img 
+                  src={selectedImg} 
+                  alt={product.name} 
+                  style={styles.mainImg}
+                />
               ) : (
                 <div style={styles.noImg}>Sin imagen</div>
               )}
@@ -310,10 +318,11 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid var(--border-color)',
   },
   mainImg: {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
+    objectFit: 'contain',
+    maxWidth: '100%',
+    maxHeight: '100%',
     display: 'block',
+    margin: '0 auto',
   },
   noImg: {
     width: '100%',

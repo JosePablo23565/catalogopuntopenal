@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import AdminLayout from '../components/AdminLayout'
 import { getProducts } from '../services/productService'
-import { Package, Image, AlertTriangle, TrendingUp } from 'lucide-react'
+import { Package, Image } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export default function AdminDashboard() {
@@ -18,14 +18,10 @@ export default function AdminDashboard() {
 
   const totalProducts = products.length
   const totalImages = products.reduce((acc, p) => acc + (p.product_images?.length || 0), 0)
-  const sinStock = products.filter(p => p.stock === 0).length
-  const totalStock = products.reduce((acc, p) => acc + (p.stock || 0), 0)
 
   const stats = [
     { label: 'Productos', value: totalProducts, icon: Package, color: '#4f46e5', bg: '#ede9fe' },
     { label: 'Imágenes', value: totalImages, icon: Image, color: '#0891b2', bg: '#e0f2fe' },
-    { label: 'Sin stock', value: sinStock, icon: AlertTriangle, color: '#d97706', bg: '#fef3c7' },
-    { label: 'Unidades totales', value: totalStock, icon: TrendingUp, color: '#059669', bg: '#d1fae5' },
   ]
 
   return (
@@ -90,14 +86,6 @@ export default function AdminDashboard() {
                     <p style={styles.recentName}>{p.name}</p>
                     <p style={styles.recentPrice}>₡{p.price.toLocaleString()}</p>
                   </div>
-                  <span style={{
-                    ...styles.stockBadge,
-                    background: p.stock > 0 ? 'var(--success-light)' : 'var(--danger-light)',
-                    color: p.stock > 0 ? 'var(--success)' : 'var(--danger)',
-                    borderColor: p.stock > 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                  }}>
-                    {p.stock > 0 ? `${p.stock} uds` : 'Agotado'}
-                  </span>
                 </div>
               )
             })}
@@ -187,12 +175,4 @@ const styles: Record<string, React.CSSProperties> = {
   recentInfo: { flex: 1 },
   recentName: { fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)', margin: 0 },
   recentPrice: { fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 600, marginTop: '0.15rem', margin: 0 },
-  stockBadge: {
-    fontSize: '0.78rem',
-    fontWeight: 700,
-    padding: '4px 12px',
-    borderRadius: '20px',
-    whiteSpace: 'nowrap',
-    border: '1px solid transparent',
-  },
 }
