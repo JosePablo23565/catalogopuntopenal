@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { getProducts } from '../services/productService'
 import ProductCard from '../components/ProductCard'
-import { Shirt, Settings, Search, SlidersHorizontal, X } from 'lucide-react'
+import { Search, SlidersHorizontal, X } from 'lucide-react'
 import logo from '../assets/puntopenalcr.webp'
 import { FaWhatsapp, FaInstagram } from 'react-icons/fa'
 
@@ -13,7 +13,7 @@ const FOOTBALL_LEAGUES = [
   'Serie A',
   'Bundesliga',
   'Ligue 1',
-  'Resto del Mundo'  // <-- MOVIDO AQUÍ
+  'Resto del Mundo'
 ]
 
 // NBA
@@ -46,7 +46,7 @@ export default function Catalog() {
   
   const [selectedLeague, setSelectedLeague] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  const [isFiltersOpen, setIsFiltersOpen] = useState(false) // Controla el estado de los filtros (sidebar/drawer)
   
   const [currentPage, setCurrentPage] = useState(1)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
@@ -147,7 +147,6 @@ export default function Catalog() {
 
   const FiltersPanel = () => (
     <>
-      {/* FUTBOL (incluye Resto del Mundo) */}
       <div style={styles.filterGroup}>
         <label style={styles.filterLabel}>FUTBOL</label>
         <div style={styles.filterButtons}>
@@ -176,7 +175,6 @@ export default function Catalog() {
         </div>
       </div>
 
-      {/* NBA */}
       <div style={styles.filterGroup}>
         <label style={styles.filterLabel}>NBA</label>
         <div style={styles.filterButtons}>
@@ -199,7 +197,6 @@ export default function Catalog() {
         </div>
       </div>
 
-      {/* F1 */}
       <div style={styles.filterGroup}>
         <label style={styles.filterLabel}>F1</label>
         <div style={styles.filterButtons}>
@@ -226,7 +223,6 @@ export default function Catalog() {
         </div>
       </div>
 
-      {/* CATEGORÍAS (Retro y Selecciones) */}
       <div style={styles.filterButtons}>
         <button
           onClick={() => handleCategoryClick('Retro')}
@@ -269,9 +265,10 @@ export default function Catalog() {
           <div style={styles.logo}>
             <span style={styles.logoText}>puntopenalcr</span>
           </div>
-          <button style={styles.adminBtn} onClick={() => navigate('/admin')}>
-            <Settings size={15} />
-            <span>Admin</span>
+          {/* Botón Filtrar en el header */}
+          <button style={styles.filterHeaderBtn} onClick={() => setIsFiltersOpen(true)}>
+            <SlidersHorizontal size={16} />
+            <span>Filtrar</span>
           </button>
         </div>
       </header>
@@ -300,22 +297,9 @@ export default function Catalog() {
               style={styles.searchInput}
             />
           </div>
-          {isMobile && (
-            <button style={styles.filterToggleBtn} onClick={() => setIsDrawerOpen(true)}>
-              <SlidersHorizontal size={16} />
-              <span>Filtrar</span>
-            </button>
-          )}
         </div>
 
         <div style={styles.contentLayout}>
-          {!isMobile && (
-            <aside style={styles.filtersSidebar}>
-              <h3 style={styles.sidebarTitle}>Filtrar productos</h3>
-              <FiltersPanel />
-            </aside>
-          )}
-
           <div style={styles.mainContent}>
             {loading ? (
               <div style={styles.loadingWrapper}>
@@ -405,13 +389,14 @@ export default function Catalog() {
         </div>
       </footer>
 
-      {isMobile && isDrawerOpen && (
+      {/* FILTROS - Sidebar/Drawer universal */}
+      {isFiltersOpen && (
         <>
-          <div style={styles.drawerOverlay} onClick={() => setIsDrawerOpen(false)} />
-          <div style={styles.drawer}>
+          <div style={styles.drawerOverlay} onClick={() => setIsFiltersOpen(false)} />
+          <div style={isMobile ? styles.drawer : styles.filtersDrawer}>
             <div style={styles.drawerHeader}>
               <h3 style={styles.drawerTitle}>Filtrar productos</h3>
-              <button style={styles.drawerClose} onClick={() => setIsDrawerOpen(false)}>
+              <button style={styles.drawerClose} onClick={() => setIsFiltersOpen(false)}>
                 <X size={20} />
               </button>
             </div>
@@ -431,7 +416,7 @@ const styles: Record<string, React.CSSProperties> = {
   headerInner: { maxWidth: '1200px', margin: '0 auto', padding: '0.85rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   logo: { display: 'flex', alignItems: 'center', gap: '0.6rem' },
   logoText: { fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.3px', background: 'linear-gradient(135deg, var(--text-main) 0%, #1e1b4b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' },
-  adminBtn: { display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.95rem', background: '#fff', border: '1px solid var(--border-color)', borderRadius: '10px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)', boxShadow: '0 2px 6px rgba(15, 23, 42, 0.02)' },
+  filterHeaderBtn: { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', background: '#fff', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer', color: 'var(--text-main)' },
   hero: { background: '#ffffff', position: 'relative', textAlign: 'center', padding: '3rem 1.5rem', overflow: 'hidden' },
   heroOverlay: { position: 'absolute', inset: 0, background: 'transparent', pointerEvents: 'none' },
   heroContent: { position: 'relative', maxWidth: '700px', margin: '0 auto', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
@@ -442,10 +427,7 @@ const styles: Record<string, React.CSSProperties> = {
   searchBox: { position: 'relative', flex: '1 1 300px', maxWidth: '450px' },
   searchIcon: { position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' },
   searchInput: { width: '100%', padding: '0.65rem 1rem 0.65rem 2.6rem', borderRadius: '12px', border: '1px solid var(--border-color)', fontSize: '0.92rem', outline: 'none', background: '#fff', boxShadow: '0 2px 6px rgba(15, 23, 42, 0.02)' },
-  filterToggleBtn: { display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1.2rem', background: '#fff', border: '1px solid var(--border-color)', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' },
   contentLayout: { display: 'flex', gap: '2rem' },
-  filtersSidebar: { width: '280px', flexShrink: 0, background: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', padding: '1.25rem', boxShadow: 'var(--card-shadow)', alignSelf: 'start' },
-  sidebarTitle: { fontSize: '1rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--text-main)' },
   mainContent: { flex: 1, minWidth: 0 },
   filterGroup: { display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1.25rem' },
   filterLabel: { fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: 'var(--text-muted)' },
@@ -474,6 +456,19 @@ const styles: Record<string, React.CSSProperties> = {
   socialLink: { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', background: 'transparent', transition: 'transform 0.2s', cursor: 'pointer' },
   footerCopy: { color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0 },
   drawerOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 },
+  filtersDrawer: {
+    position: 'fixed',
+    top: 0,
+    right: 0,
+    width: '400px',
+    maxWidth: '90%',
+    height: '100%',
+    background: '#fff',
+    zIndex: 1001,
+    boxShadow: '-4px 0 20px rgba(0,0,0,0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+  },
   drawer: { position: 'fixed', top: 0, right: 0, width: '85%', maxWidth: '320px', height: '100%', background: '#fff', zIndex: 1001, boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' },
   drawerHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem', borderBottom: '1px solid var(--border-color)' },
   drawerTitle: { fontSize: '1.1rem', fontWeight: 700, margin: 0 },
