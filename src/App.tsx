@@ -19,12 +19,12 @@ export default function App() {
         {/* Auth */}
         <Route path="/login" element={<Login />} />
 
-        {/* Admin protegido */}
-        <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-        <Route path="/admin/productos" element={<ProtectedRoute><ProductList /></ProtectedRoute>} />
-        <Route path="/admin/productos/nuevo" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
-        <Route path="/admin/productos/editar/:id" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
-        <Route path="/admin/configuracion" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        {/* Admin protegido con RUTA SECRETA */}
+        <Route path="/puntopenal-admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/puntopenal-admin/productos" element={<ProtectedRoute><ProductList /></ProtectedRoute>} />
+        <Route path="/puntopenal-admin/productos/nuevo" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
+        <Route path="/puntopenal-admin/productos/editar/:id" element={<ProtectedRoute><ProductForm /></ProtectedRoute>} />
+        <Route path="/puntopenal-admin/configuracion" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

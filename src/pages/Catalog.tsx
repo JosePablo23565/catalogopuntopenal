@@ -3,15 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { getProducts } from '../services/productService'
 import ProductCard from '../components/ProductCard'
 import { Shirt, Settings, Search, SlidersHorizontal, X } from 'lucide-react'
+import logo from '../assets/puntopenalcr.webp'
+import { FaWhatsapp, FaInstagram } from 'react-icons/fa'
 
-
-// FUTBOL
+// FUTBOL (incluyendo Resto del Mundo)
 const FOOTBALL_LEAGUES = [
   'Premier League',
   'La Liga',
   'Serie A',
   'Bundesliga',
-  'Ligue 1'
+  'Ligue 1',
+  'Resto del Mundo'  // <-- MOVIDO AQUÍ
 ]
 
 // NBA
@@ -42,21 +44,17 @@ export default function Catalog() {
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   
-  // Filtros
   const [selectedLeague, setSelectedLeague] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('')
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   
-  // Paginación
   const [currentPage, setCurrentPage] = useState(1)
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
-  // Determinar si una categoría es excluyente
-  const isExclusiveCategory = selectedCategory === 'Resto del Mundo' || selectedCategory === 'Selecciones'
+  const isExclusiveCategory = selectedCategory === 'Selecciones'
   const isCategoryDisabled = (category: string) => {
-    if (category === 'Resto del Mundo') return false // Siempre se puede seleccionar
-    if (category === 'Selecciones') return false // Siempre se puede seleccionar
-    return isExclusiveCategory // Retro se deshabilita si hay una categoría excluyente
+    if (category === 'Selecciones') return false
+    return isExclusiveCategory
   }
 
   const isLeagueDisabled = () => isExclusiveCategory
@@ -77,7 +75,6 @@ export default function Catalog() {
     setCurrentPage(1)
   }, [searchTerm, selectedLeague, selectedCategory])
 
-  // Filtrar productos
   const filteredProducts = products.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesLeague = selectedLeague === '' ? true : p.league === selectedLeague
@@ -133,8 +130,7 @@ export default function Catalog() {
       setSelectedCategory('')
     } else {
       setSelectedCategory(category)
-      // Si es categoría excluyente, limpiar liga
-      if (category === 'Resto del Mundo' || category === 'Selecciones') {
+      if (category === 'Selecciones') {
         setSelectedLeague('')
       }
     }
@@ -149,10 +145,9 @@ export default function Catalog() {
     }
   }
 
-  // Panel de filtros (reutilizable)
   const FiltersPanel = () => (
     <>
-      {/* FUTBOL */}
+      {/* FUTBOL (incluye Resto del Mundo) */}
       <div style={styles.filterGroup}>
         <label style={styles.filterLabel}>FUTBOL</label>
         <div style={styles.filterButtons}>
@@ -160,6 +155,7 @@ export default function Catalog() {
             let displayName = league
             if (league === 'Premier League') displayName = 'Premier'
             if (league === 'Bundesliga') displayName = 'Bundes'
+            if (league === 'Resto del Mundo') displayName = 'Resto Mundo'
             return (
               <button
                 key={league}
@@ -230,7 +226,7 @@ export default function Catalog() {
         </div>
       </div>
 
-      {/* CATEGORÍAS */}
+      {/* CATEGORÍAS (Retro y Selecciones) */}
       <div style={styles.filterButtons}>
         <button
           onClick={() => handleCategoryClick('Retro')}
@@ -243,15 +239,6 @@ export default function Catalog() {
           }}
         >
           Retro {getCountByCategory('Retro') > 0 && <span style={styles.countBadge}>{getCountByCategory('Retro')}</span>}
-        </button>
-        <button
-          onClick={() => handleCategoryClick('Resto del Mundo')}
-          style={{
-            ...styles.filterChip,
-            ...(selectedCategory === 'Resto del Mundo' ? styles.filterChipActive : {}),
-          }}
-        >
-          Resto Mundo {getCountByCategory('Resto del Mundo') > 0 && <span style={styles.countBadge}>{getCountByCategory('Resto del Mundo')}</span>}
         </button>
         <button
           onClick={() => handleCategoryClick('Selecciones')}
@@ -280,10 +267,7 @@ export default function Catalog() {
       <header style={styles.header}>
         <div style={styles.headerInner}>
           <div style={styles.logo}>
-            <div style={styles.logoIconBg}>
-              <Shirt size={20} color="#fff" />
-            </div>
-            <span style={styles.logoText}>CamisasShop</span>
+            <span style={styles.logoText}>puntopenalcr</span>
           </div>
           <button style={styles.adminBtn} onClick={() => navigate('/admin')}>
             <Settings size={15} />
@@ -292,13 +276,15 @@ export default function Catalog() {
         </div>
       </header>
 
-      {/* Sección Hero Rediseñada */}
       <div style={styles.hero}>
         <div style={styles.heroOverlay}></div>
         <div style={styles.heroContent}>
-          <span style={styles.heroLabel}>Nueva Coleccion 2026</span>
-          <h1 style={styles.heroTitle}>Elegancia y Confort</h1>
-          <p style={styles.heroSub}>Camisas exclusivas confeccionadas con materiales de la mas alta calidad</p>
+          <img 
+            src={logo} 
+            alt="Punto Penal" 
+            style={styles.heroLogo}
+          />
+          <p style={styles.heroSports}>F1 | FÚTBOL | NBA</p>
         </div>
       </div>
 
@@ -323,7 +309,6 @@ export default function Catalog() {
         </div>
 
         <div style={styles.contentLayout}>
-          {/* Filtros lateral - solo escritorio */}
           {!isMobile && (
             <aside style={styles.filtersSidebar}>
               <h3 style={styles.sidebarTitle}>Filtrar productos</h3>
@@ -387,14 +372,39 @@ export default function Catalog() {
       <footer style={styles.footer}>
         <div style={styles.footerInner}>
           <div style={styles.footerLogo}>
-            <Shirt size={18} color="var(--accent)" />
-            <span style={styles.footerLogoText}>CamisasShop</span>
+            <span style={styles.footerLogoText}>PUNTO PENAL</span>
           </div>
-          <p style={styles.footerCopy}>© 2026 CamisasShop · Confeccion Premium · Todos los derechos reservados</p>
+          
+          <div style={styles.contactMessage}>
+            <p style={styles.contactText}>¿No encontraste lo que buscás?</p>
+            <p style={styles.contactSubtext}>No hay problema, escribinos.</p>
+          </div>
+          
+          <div style={styles.socialLinks}>
+            <a 
+              href="https://wa.me/50687623104" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={styles.socialLink}
+              aria-label="WhatsApp"
+            >
+              <FaWhatsapp size={28} color="#25D366" />
+            </a>
+            <a 
+              href="https://www.instagram.com/puntopenalcr/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={styles.socialLink}
+              aria-label="Instagram"
+            >
+              <FaInstagram size={28} color="#E4405F" />
+            </a>
+          </div>
+          
+          <p style={styles.footerCopy}>© 2026 PUNTO PENAL · Todos los derechos reservados</p>
         </div>
       </footer>
 
-      {/* DRAWER MOVIL */}
       {isMobile && isDrawerOpen && (
         <>
           <div style={styles.drawerOverlay} onClick={() => setIsDrawerOpen(false)} />
@@ -420,45 +430,13 @@ const styles: Record<string, React.CSSProperties> = {
   header: { background: 'var(--glass-bg)', backdropFilter: 'blur(12px)', borderBottom: '1px solid var(--glass-border)', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 1px 10px rgba(15, 23, 42, 0.03)' },
   headerInner: { maxWidth: '1200px', margin: '0 auto', padding: '0.85rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   logo: { display: 'flex', alignItems: 'center', gap: '0.6rem' },
-  logoIconBg: { background: 'var(--accent)', padding: '0.4rem', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 10px rgba(99, 102, 241, 0.25)' },
   logoText: { fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.3px', background: 'linear-gradient(135deg, var(--text-main) 0%, #1e1b4b 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' },
   adminBtn: { display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.5rem 0.95rem', background: '#fff', border: '1px solid var(--border-color)', borderRadius: '10px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)', boxShadow: '0 2px 6px rgba(15, 23, 42, 0.02)' },
-  hero: {
-    background: 'linear-gradient(135deg, #e5f0f9 0%, #f2f8fd 100%)',
-    position: 'relative',
-    color: '#1c425e',
-    textAlign: 'center',
-    padding: '5rem 1.5rem',
-    overflow: 'hidden',
-  },
-  heroOverlay: { position: 'absolute', inset: 0, background: 'radial-gradient(circle at top right, rgba(34, 114, 167, 0.08), transparent 60%)', pointerEvents: 'none' },
-  heroContent: { position: 'relative', maxWidth: '700px', margin: '0 auto', zIndex: 1 },
-  heroLabel: {
-    fontSize: '0.78rem',
-    fontWeight: 700,
-    letterSpacing: '1.5px',
-    color: '#2272a7',
-    textTransform: 'uppercase',
-    background: 'rgba(34, 114, 167, 0.1)',
-    padding: '4px 12px',
-    borderRadius: '20px',
-    display: 'inline-block',
-  },
-  heroTitle: {
-    fontSize: '2.8rem',
-    fontWeight: 800,
-    marginTop: '1.25rem',
-    letterSpacing: '-1px',
-    lineHeight: '1.15',
-    color: '#1c425e',
-  },
-  heroSub: {
-    fontSize: '1.1rem',
-    color: '#1d5b87',
-    marginTop: '0.85rem',
-    fontWeight: 400,
-    lineHeight: '1.5',
-  },
+  hero: { background: '#ffffff', position: 'relative', textAlign: 'center', padding: '3rem 1.5rem', overflow: 'hidden' },
+  heroOverlay: { position: 'absolute', inset: 0, background: 'transparent', pointerEvents: 'none' },
+  heroContent: { position: 'relative', maxWidth: '700px', margin: '0 auto', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
+  heroLogo: { width: '200px', maxWidth: '80%', marginBottom: '0' },
+  heroSports: { fontSize: '1.25rem', fontWeight: 600, letterSpacing: '2px', color: '#334155', marginTop: '1rem', textAlign: 'center' },
   main: { maxWidth: '1200px', margin: '0 auto', padding: '2.5rem 1.5rem', flex: 1, width: '100%', boxSizing: 'border-box' },
   filterBar: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' },
   searchBox: { position: 'relative', flex: '1 1 300px', maxWidth: '450px' },
@@ -486,10 +464,15 @@ const styles: Record<string, React.CSSProperties> = {
   emptyState: { textAlign: 'center', padding: '5rem 2rem', background: '#fff', borderRadius: '16px', border: '1px solid var(--border-color)', boxShadow: 'var(--card-shadow)' },
   clearFiltersBtn: { marginTop: '1.5rem', padding: '0.6rem 1.2rem', background: 'var(--accent)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '0.85rem', fontWeight: 600, cursor: 'pointer' },
   footer: { borderTop: '1px solid var(--border-color)', background: '#fff', padding: '2rem 1.5rem', marginTop: '3rem' },
-  footerInner: { maxWidth: '1200px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' },
+  footerInner: { maxWidth: '1200px', margin: '0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', textAlign: 'center' },
   footerLogo: { display: 'flex', alignItems: 'center', gap: '0.4rem' },
   footerLogoText: { fontWeight: 700, color: 'var(--text-main)', fontSize: '1rem' },
-  footerCopy: { color: 'var(--text-muted)', fontSize: '0.82rem', margin: 0 },
+  contactMessage: { textAlign: 'center', marginBottom: '0.5rem' },
+  contactText: { fontSize: '0.9rem', fontWeight: 600, color: '#0f172a', margin: 0 },
+  contactSubtext: { fontSize: '0.8rem', color: '#475569', margin: '0.25rem 0 0 0' },
+  socialLinks: { display: 'flex', justifyContent: 'center', gap: '1.5rem', marginBottom: '0.5rem' },
+  socialLink: { display: 'flex', alignItems: 'center', justifyContent: 'center', width: '40px', height: '40px', borderRadius: '50%', background: 'transparent', transition: 'transform 0.2s', cursor: 'pointer' },
+  footerCopy: { color: 'var(--text-muted)', fontSize: '0.75rem', margin: 0 },
   drawerOverlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000 },
   drawer: { position: 'fixed', top: 0, right: 0, width: '85%', maxWidth: '320px', height: '100%', background: '#fff', zIndex: 1001, boxShadow: '-4px 0 20px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column' },
   drawerHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.25rem', borderBottom: '1px solid var(--border-color)' },

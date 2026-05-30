@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import AdminLayout from '../components/AdminLayout'
-import { createProduct, getProductById, updateProduct } from '../services/productService'
+import { createProduct, getProductById, updateProduct, deleteProductImage } from '../services/productService'
 import { uploadImage } from '../services/productService'
 import { processImage } from '../hooks/useImageProcessor'
-import { ArrowLeft, Save, Upload, Trash2, Star } from 'lucide-react'
+import { ArrowLeft, Save, Upload, Trash2, Star, X } from 'lucide-react'
 
 // ============================================
 // OPCIONES PARA LOS FILTROS
@@ -129,6 +129,16 @@ export default function ProductForm() {
     )
   }
 
+  const handleDeleteSavedImage = async (imageId: string, imageUrl: string) => {
+    if (!confirm('¿Eliminar esta imagen?')) return
+    try {
+      await deleteProductImage(imageId, imageUrl)
+      setSavedImages(prev => prev.filter(img => img.id !== imageId))
+    } catch (err) {
+      setError('No se pudo eliminar la imagen')
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
@@ -242,6 +252,14 @@ export default function ProductForm() {
                   <div key={img.id} style={styles.imgCard}>
                     <img src={img.url} alt="" style={styles.img} />
                     {img.is_main && <div style={styles.mainBadge}>Principal</div>}
+                    <button
+                      type="button"
+                      style={styles.deleteSavedImgBtn}
+                      onClick={() => handleDeleteSavedImage(img.id, img.url)}
+                      title="Eliminar imagen"
+                    >
+                      <X size={14} />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -514,6 +532,23 @@ const styles: Record<string, React.CSSProperties> = {
     padding: '3px 8px',
     borderRadius: '20px',
     boxShadow: '0 2px 6px rgba(99,102,241,0.3)',
+  },
+  deleteSavedImgBtn: {
+    position: 'absolute',
+    top: '6px',
+    right: '6px',
+    background: 'rgba(0,0,0,0.6)',
+    borderRadius: '50%',
+    width: '24px',
+    height: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    cursor: 'pointer',
+    color: '#fff',
+    transition: 'all 0.2s',
+    zIndex: 10,
   },
   imgActions: {
     position: 'absolute',

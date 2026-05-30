@@ -40,7 +40,7 @@ export default function ProductCard({ product }: Props) {
         )}
 
         {product.season && (
-          <p style={styles.season}> {product.season}</p>
+          <p style={styles.season}>{product.season}</p>
         )}
 
         <p style={styles.price}>₡{product.price.toLocaleString()}</p>
@@ -60,11 +60,11 @@ const styles: Record<string, React.CSSProperties> = {
     border: '1px solid var(--border-color)',
     display: 'flex',
     flexDirection: 'column',
-    height: '100%', // ← ALTURA TOTAL
+    height: '100%',
   },
   imgWrapper: {
     width: '100%',
-    aspectRatio: '1 / 1', // ← CUADRADO FIJO (mismo tamaño para todas)
+    aspectRatio: '1 / 1',
     overflow: 'hidden',
     background: '#f1f5f9',
     display: 'flex',
@@ -74,7 +74,7 @@ const styles: Record<string, React.CSSProperties> = {
   img: {
     width: '100%',
     height: '100%',
-    objectFit: 'contain', // ← IMAGEN COMPLETA (no recorta)
+    objectFit: 'contain',
     transition: 'transform 0.3s ease',
   },
   noImg: {
@@ -90,14 +90,14 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.3rem',
-    flex: 1, // ← OCUPA EL ESPACIO DISPONIBLE
+    flex: 1,
   },
   name: {
-    fontSize: '0.95rem',
-    fontWeight: 700,
-    color: 'var(--text-main)',
+    fontSize: '1rem',
+    fontWeight: 800,
+    color: '#0f172a',
     margin: 0,
-    lineHeight: '1.3',
+    lineHeight: '1.25',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: '-webkit-box',
@@ -107,20 +107,21 @@ const styles: Record<string, React.CSSProperties> = {
   league: {
     fontSize: '0.7rem',
     fontWeight: 600,
-    color: '#6366f1',
+    color: '#475569',
     textTransform: 'uppercase',
     letterSpacing: '0.3px',
   },
   season: {
     fontSize: '0.7rem',
+    fontWeight: 400,
     color: '#64748b',
     margin: 0,
   },
   price: {
     fontSize: '1rem',
-    fontWeight: 800,
-    color: '#6366f1',
-    margin: '0.25rem 0 0 0',
+    fontWeight: 700,
+    color: '#0f172a',
+    margin: '0.5rem 0 0 0',
   },
 }
 
