@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { getProducts } from '../services/productService'
 import ProductCard from '../components/ProductCard'
 import { Search, SlidersHorizontal, X } from 'lucide-react'
@@ -21,9 +20,7 @@ const F1_TEAMS = [
 const PRODUCTS_PER_PAGE = 36
 
 export default function Catalog() {
-  const navigate = useNavigate()
   const [products, setProducts] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   
   const [selectedLeague, setSelectedLeague] = useState('')
@@ -54,9 +51,6 @@ export default function Catalog() {
         if (isMounted) setProducts(data)
       })
       .catch(err => console.error(err))
-      .finally(() => {
-        if (isMounted) setLoading(false)
-      })
     return () => { isMounted = false }
   }, [])
 
@@ -283,7 +277,6 @@ export default function Catalog() {
 
         <div style={styles.contentLayout}>
           <div style={styles.mainContent}>
-            {/* 🔴 FORZADO: mostramos los productos sin depender de loading */}
             {filteredProducts.length === 0 ? (
               <div style={styles.emptyState}>
                 <span style={{ fontSize: '2.5rem' }}>🔍</span>

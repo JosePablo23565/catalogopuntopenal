@@ -67,14 +67,7 @@ export default function ProductForm() {
   })
 
   const [savedImages, setSavedImages] = useState<any[]>([])
-  const [isMobile, setIsMobile] = useState<boolean>(false)
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 600)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
+  // 🔴 ELIMINADO: const [isMobile, setIsMobile] = useState<boolean>(false)
 
   useEffect(() => {
     if (isEditing) {
