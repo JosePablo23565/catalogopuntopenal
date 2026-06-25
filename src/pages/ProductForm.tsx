@@ -174,7 +174,7 @@ export default function ProductForm() {
         )
       }
 
-      navigate('/admin/productos')
+      navigate('/puntopenal-admin/productos')
     } catch (err: any) {
       setError('Error al guardar el producto')
     } finally {
@@ -187,10 +187,10 @@ export default function ProductForm() {
   return (
     <AdminLayout>
       <div style={styles.header}>
-        <button style={styles.backBtn} onClick={() => navigate('/admin/productos')}>
+        <button style={styles.backBtn} onClick={() => navigate('/puntopenal-admin/productos')}>
           <ArrowLeft size={18} /> Volver
         </button>
-        <h1 style={styles.title}>{isEditing ? 'Editar producto' : 'Nuevo producto'}</h1>
+        {/* TÍTULO ELIMINADO */}
       </div>
 
       <form onSubmit={handleSubmit} style={styles.form}>
@@ -433,6 +433,7 @@ const styles: Record<string, React.CSSProperties> = {
   header: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'flex-start',
     gap: '1.25rem',
     marginBottom: '2rem',
   },
@@ -449,13 +450,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     color: 'var(--text-muted)',
     boxShadow: '0 2px 5px rgba(15,23,42,0.02)',
-  },
-  title: {
-    fontSize: '1.8rem',
-    fontWeight: 800,
-    color: 'var(--text-main)',
-    letterSpacing: '-0.5px',
-    margin: 0,
   },
   form: {
     background: '#fff',

@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../components/AdminLayout'
-import { getProducts, deleteProduct, getSettings } from '../services/productService'
+import { getProducts, deleteProduct } from '../services/productService'
 import type { Product } from '../types/product'
-import { Plus, Pencil, Trash2, FileDown } from 'lucide-react'
+import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { useIsMobile } from '../hooks/useIsMobile'
-import { generateCatalogPDF } from '../services/pdfService'
-
 
 const PRODUCTS_PER_PAGE = 36
 
 export default function ProductList() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
-  const [exporting, setExporting] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
   const navigate = useNavigate()
   const isMobile = useIsMobile()
@@ -35,19 +32,6 @@ export default function ProductList() {
     if (!confirm('¿Eliminar este producto?')) return
     await deleteProduct(id)
     fetchProducts()
-  }
-
-  const handleExportPDF = async () => {
-    setExporting(true)
-    try {
-      const settings = await getSettings()
-      const storeUrl = window.location.origin
-      await generateCatalogPDF(products as any, settings, storeUrl)
-    } catch (err) {
-      console.error('Error generando PDF:', err)
-    } finally {
-      setExporting(false)
-    }
   }
 
   const totalProducts = products.length
@@ -85,33 +69,15 @@ export default function ProductList() {
   return (
     <AdminLayout>
       <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Productos</h1>
-          <p style={styles.subtitle}>Gestioná tu catálogo</p>
-        </div>
+        <h1 style={styles.title}>Productos</h1>
 
-        <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-          <button
-            style={{
-              ...styles.exportBtn,
-              opacity: exporting || products.length === 0 ? 0.6 : 1,
-              cursor: exporting || products.length === 0 ? 'not-allowed' : 'pointer',
-            }}
-            onClick={handleExportPDF}
-            disabled={exporting || products.length === 0}
-          >
-            <FileDown size={18} />
-            {isMobile ? '' : exporting ? 'Generando...' : 'Exportar PDF'}
-          </button>
-
-          <button
-            style={styles.addBtn}
-            onClick={() => navigate('/admin/productos/nuevo')}
-          >
-            <Plus size={18} />
-            {!isMobile && 'Nuevo producto'}
-          </button>
-        </div>
+        <button
+          style={styles.addBtn}
+          onClick={() => navigate('/puntopenal-admin/productos/nuevo')}
+        >
+          <Plus size={18} />
+          {!isMobile && 'Nuevo producto'}
+        </button>
       </div>
 
       {loading ? (
@@ -145,7 +111,7 @@ export default function ProductList() {
                     <div style={styles.mobileActions}>
                       <button
                         style={styles.editBtn}
-                        onClick={() => navigate(`/admin/productos/editar/${p.id}`)}
+                        onClick={() => navigate(`/puntopenal-admin/productos/editar/${p.id}`)}
                       >
                         <Pencil size={15} />
                       </button>
@@ -179,7 +145,7 @@ export default function ProductList() {
                         <div style={{ display: 'flex', gap: '0.5rem' }}>
                           <button
                             style={styles.editBtn}
-                            onClick={() => navigate(`/admin/productos/editar/${p.id}`)}
+                            onClick={() => navigate(`/puntopenal-admin/productos/editar/${p.id}`)}
                           >
                             <Pencil size={15} />
                           </button>
@@ -198,7 +164,6 @@ export default function ProductList() {
             </div>
           )}
 
-          {/* PAGINACIÓN SOLO NÚMEROS */}
           {totalPages > 1 && (
             <div style={styles.pagination}>
               {getPageNumbers().map((page, idx) => (
@@ -232,12 +197,11 @@ const styles: Record<string, React.CSSProperties> = {
   header: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     marginBottom: '2rem',
     gap: '1rem',
   },
   title: { fontSize: '1.8rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.5px', margin: 0 },
-  subtitle: { color: 'var(--text-muted)', marginTop: '0.2rem', fontSize: '0.92rem', fontWeight: 500 },
   addBtn: {
     display: 'flex',
     alignItems: 'center',
@@ -252,20 +216,6 @@ const styles: Record<string, React.CSSProperties> = {
     fontWeight: 600,
     flexShrink: 0,
     boxShadow: '0 4px 12px rgba(99, 102, 241, 0.2)',
-  },
-  exportBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.65rem 1.25rem',
-    background: '#fff',
-    color: 'var(--text-main)',
-    border: '1px solid var(--border-color)',
-    borderRadius: '10px',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-    flexShrink: 0,
-    boxShadow: '0 2px 6px rgba(15, 23, 42, 0.02)',
   },
   empty: {
     background: '#fff',

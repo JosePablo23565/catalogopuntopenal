@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../services/supabaseClient'
-import { LayoutDashboard, Package, LogOut, Menu, X, Shirt, Settings, Store } from 'lucide-react'
+import { LayoutDashboard, Package, LogOut, Menu, X, Settings, Store } from 'lucide-react'
 import { useIsMobile } from '../hooks/useIsMobile'
 
-// RUTAS ACTUALIZADAS con la ruta secreta /puntopenal-admin
 const navItems = [
   { label: 'Dashboard', path: '/puntopenal-admin', icon: LayoutDashboard },
   { label: 'Productos', path: '/puntopenal-admin/productos', icon: Package },
@@ -33,9 +32,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div style={{ minHeight: '100vh', background: 'var(--bg-main)', display: 'flex', flexDirection: 'column' }}>
         <header style={styles.topbar}>
           <div style={styles.topbarLogo}>
-            <div style={styles.mobileLogoBg}>
-              <Shirt size={16} color="#fff" />
-            </div>
             <span style={styles.topbarTitle}>PUNTO PENAL</span>
           </div>
           <button style={styles.menuBtn} onClick={() => setMenuOpen(!menuOpen)}>
@@ -55,13 +51,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     onClick={() => handleNav(item.path)}
                     style={{
                       ...styles.drawerItem,
-                      background: active ? 'linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0.03) 100%)' : 'transparent',
-                      borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
-                      borderRadius: active ? '0 8px 8px 0' : '8px',
+                      background: active ? '#ffffff' : 'transparent',
+                      color: active ? '#0E526B' : '#ffffff',
                     }}
                   >
-                    <Icon size={18} color={active ? 'var(--accent)' : '#94a3b8'} />
-                    <span style={{ ...styles.drawerLabel, color: active ? '#fff' : '#cbd5e1', fontWeight: active ? 600 : 500 }}>{item.label}</span>
+                    <Icon size={18} color={active ? '#0E526B' : '#94a3b8'} />
+                    <span style={{ ...styles.drawerLabel, color: active ? '#0E526B' : '#ffffff', fontWeight: active ? 700 : 500 }}>
+                      {item.label}
+                    </span>
                   </button>
                 )
               })}
@@ -96,9 +93,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div style={styles.desktopWrapper}>
       <aside style={{ ...styles.sidebar, width: sidebarOpen ? '250px' : '72px' }}>
         <div style={styles.logo}>
-          <div style={styles.logoIconBg}>
-            <Shirt size={20} color="#fff" />
-          </div>
           {sidebarOpen && <span style={styles.logoText}>PUNTO PENAL</span>}
         </div>
 
@@ -116,18 +110,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 onClick={() => navigate(item.path)}
                 style={{
                   ...styles.navItem,
-                  background: active ? 'linear-gradient(90deg, rgba(99, 102, 241, 0.18) 0%, rgba(99, 102, 241, 0.03) 100%)' : 'transparent',
-                  borderLeft: active ? '3px solid var(--accent)' : '3px solid transparent',
-                  borderRadius: active ? '0 8px 8px 0' : '8px',
+                  background: active ? '#ffffff' : 'transparent',
+                  color: active ? '#0E526B' : '#ffffff',
+                  borderRadius: active ? '8px' : '8px',
                   paddingLeft: sidebarOpen ? '1rem' : '0.85rem',
                 }}
               >
-                <Icon size={18} color={active ? 'var(--accent)' : '#94a3b8'} />
+                <Icon size={18} color={active ? '#0E526B' : '#94a3b8'} />
                 {sidebarOpen && (
                   <span style={{ 
                     ...styles.navLabel, 
-                    color: active ? '#fff' : '#94a3b8',
-                    fontWeight: active ? 600 : 500 
+                    color: active ? '#0E526B' : '#ffffff',
+                    fontWeight: active ? 700 : 500 
                   }}>
                     {item.label}
                   </span>
@@ -171,7 +165,7 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'var(--bg-main)',
   },
   sidebar: {
-    background: 'linear-gradient(180deg, #0b0f19 0%, #0f172a 100%)',
+    background: '#0E526B',
     display: 'flex',
     flexDirection: 'column',
     transition: 'width 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -185,21 +179,12 @@ const styles: Record<string, React.CSSProperties> = {
   logo: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.75rem',
+    justifyContent: 'center',
     padding: '1.5rem 1rem 1rem',
     borderBottom: '1px solid rgba(255,255,255,0.05)',
   },
-  logoIconBg: {
-    background: 'var(--accent)',
-    padding: '0.4rem',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)',
-  },
   logoText: {
-    color: '#fff',
+    color: '#ffffff',
     fontWeight: 800,
     fontSize: '1.05rem',
     whiteSpace: 'nowrap',
@@ -231,6 +216,8 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     transition: 'all 0.2s',
     whiteSpace: 'nowrap',
+    background: 'transparent',
+    color: '#ffffff',
   },
   navLabel: {
     fontSize: '0.9rem',
@@ -248,6 +235,7 @@ const styles: Record<string, React.CSSProperties> = {
     whiteSpace: 'nowrap',
     textDecoration: 'none',
     transition: 'all 0.25s',
+    color: '#ffffff',
   },
   logoutBtn: {
     display: 'flex',
@@ -260,6 +248,7 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     whiteSpace: 'nowrap',
     transition: 'all 0.25s',
+    color: '#ffffff',
   },
   main: {
     flex: 1,
@@ -268,7 +257,7 @@ const styles: Record<string, React.CSSProperties> = {
     minWidth: 0,
   },
   topbar: {
-    background: '#0b0f19',
+    background: '#0E526B',
     padding: '0.85rem 1.25rem',
     display: 'flex',
     justifyContent: 'space-between',
@@ -283,16 +272,8 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: 'center',
     gap: '0.5rem',
   },
-  mobileLogoBg: {
-    background: 'var(--accent)',
-    padding: '0.35rem',
-    borderRadius: '6px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   topbarTitle: {
-    color: '#fff',
+    color: '#ffffff',
     fontWeight: 800,
     fontSize: '0.95rem',
   },
@@ -302,9 +283,10 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
+    color: '#ffffff',
   },
   drawer: {
-    background: '#0b0f19',
+    background: '#0E526B',
     display: 'flex',
     flexDirection: 'column',
     position: 'fixed',
@@ -330,6 +312,8 @@ const styles: Record<string, React.CSSProperties> = {
     cursor: 'pointer',
     fontSize: '0.92rem',
     transition: 'all 0.2s',
+    background: 'transparent',
+    color: '#ffffff',
   },
   drawerLabel: {
     fontSize: '0.92rem',
@@ -344,6 +328,7 @@ const styles: Record<string, React.CSSProperties> = {
     borderRadius: '8px',
     cursor: 'pointer',
     textDecoration: 'none',
+    color: '#10b981',
   },
   drawerLogout: {
     display: 'flex',
@@ -355,5 +340,6 @@ const styles: Record<string, React.CSSProperties> = {
     borderTop: '1px solid rgba(255,255,255,0.05)',
     cursor: 'pointer',
     width: '100%',
+    color: '#f43f5e',
   },
 }

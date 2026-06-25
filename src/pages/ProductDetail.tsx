@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { getProductById } from '../services/productService'
-import { ArrowLeft, Shirt } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { FaWhatsapp } from 'react-icons/fa'
 import { useIsMobile } from '../hooks/useIsMobile'
 
@@ -43,10 +43,7 @@ export default function ProductDetail() {
             <ArrowLeft size={16} />
             {isMobile ? 'Volver' : 'Volver al catálogo'}
           </button>
-          <div style={styles.logo}>
-            <Shirt size={20} color="#1a1a2e" />
-            {!isMobile && <span style={styles.logoText}>PUNTO PENAL</span>}
-          </div>
+          {/* Logo eliminado */}
         </div>
       </header>
 
@@ -126,40 +123,38 @@ export default function ProductDetail() {
 const styles: Record<string, React.CSSProperties> = {
   page: { minHeight: '100vh', background: 'var(--bg-main)' },
   loading: { textAlign: 'center', padding: '6rem 2rem', color: 'var(--text-muted)', fontWeight: 500 },
-  header: {
-    background: 'var(--glass-bg)',
+  header: { 
+    background: 'rgba(14, 82, 107, 0.85)',
     backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
-    borderBottom: '1px solid var(--glass-border)',
+    borderBottom: '1px solid rgba(255,255,255,0.2)',
     position: 'sticky',
     top: 0,
-    zIndex: 10,
-    boxShadow: '0 1px 10px rgba(15, 23, 42, 0.02)',
+    zIndex: 100,
+    boxShadow: '0 1px 10px rgba(15, 23, 42, 0.03)',
   },
   headerInner: {
     maxWidth: '1200px',
     margin: '0 auto',
     padding: '0.85rem 1.5rem',
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',  // ← alineado a la izquierda
     alignItems: 'center',
   },
   backBtn: {
     display: 'flex',
     alignItems: 'center',
     gap: '0.45rem',
-    background: '#fff',
-    border: '1px solid var(--border-color)',
-    borderRadius: '10px',
+    background: 'transparent',
+    border: '1px solid #ffffff',
+    borderRadius: '8px',
     padding: '0.5rem 0.95rem',
     cursor: 'pointer',
     fontSize: '0.85rem',
     fontWeight: 600,
-    color: 'var(--text-muted)',
+    color: '#ffffff',
     boxShadow: '0 2px 5px rgba(15, 23, 42, 0.02)',
   },
-  logo: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
-  logoText: { fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' },
   main: {
     maxWidth: '1100px',
     margin: '0 auto',

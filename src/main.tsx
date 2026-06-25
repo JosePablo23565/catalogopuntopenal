@@ -1,18 +1,12 @@
-import { supabase } from './services/supabaseClient'
-
-async function testConnection() {
-  const { data, error } = await supabase.from('products').select('*')
-  if (error) {
-    console.error('❌ Error:', error.message)
-  } else {
-    console.log('✅ Conexión exitosa! Productos:', data)
-  }
-}
-
-testConnection()
-
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-ReactDOM.createRoot(document.getElementById('root')!).render(<App />)
+// Verificar que el elemento #root existe
+const rootElement = document.getElementById('root')
+
+if (!rootElement) {
+  console.error('❌ No se encontró el elemento #root en el HTML')
+} else {
+  ReactDOM.createRoot(rootElement).render(<App />)
+}

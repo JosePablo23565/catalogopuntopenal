@@ -16,7 +16,6 @@ export default function ProductCard({ product }: Props) {
       onClick={() => navigate(`/producto/${product.id}`)}
       style={styles.card}
     >
-      {/* Contenedor de imagen con tamaño FIJO */}
       <div style={styles.imgWrapper}>
         {imageUrl ? (
           <img 
@@ -31,7 +30,6 @@ export default function ProductCard({ product }: Props) {
         )}
       </div>
 
-      {/* Contenedor de texto con altura FIJA */}
       <div style={styles.info}>
         <h3 style={styles.name}>{product.name}</h3>
 
@@ -74,7 +72,7 @@ const styles: Record<string, React.CSSProperties> = {
   img: {
     width: '100%',
     height: '100%',
-    objectFit: 'contain',
+    objectFit: 'cover',
     transition: 'transform 0.3s ease',
   },
   noImg: {
@@ -93,11 +91,11 @@ const styles: Record<string, React.CSSProperties> = {
     flex: 1,
   },
   name: {
-    fontSize: '1rem',
-    fontWeight: 800,
-    color: '#0f172a',
+    fontSize: '0.95rem',
+    fontWeight: 700,
+    color: 'var(--text-main)',
     margin: 0,
-    lineHeight: '1.25',
+    lineHeight: '1.3',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     display: '-webkit-box',

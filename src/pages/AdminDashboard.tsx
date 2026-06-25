@@ -26,9 +26,6 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <h1 style={styles.title}>Dashboard</h1>
-      <p style={styles.subtitle}>Resumen de tu tienda</p>
-
       {/* Stats */}
       <div style={styles.statsGrid}>
         {stats.map(stat => {

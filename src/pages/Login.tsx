@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../services/supabaseClient'
 import { useNavigate } from 'react-router-dom'
-import { Shirt } from 'lucide-react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -11,13 +10,11 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  // Si ya hay sesión activa, redirigir directo al admin
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate('/admin')
+      if (data.session) navigate('/puntopenal-admin')
     })
 
-    // Recuperar email guardado si eligió recordar
     const savedEmail = localStorage.getItem('rememberedEmail')
     if (savedEmail) {
       setEmail(savedEmail)
@@ -27,21 +24,30 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    setLoading(true)
     setError('')
+
+    if (!email.trim()) {
+      setError('Por favor, ingresa tu correo electrónico')
+      return
+    }
+    if (!password.trim()) {
+      setError('Por favor, ingresa tu contraseña')
+      return
+    }
+
+    setLoading(true)
 
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      setError('Credenciales incorrectas')
+      setError('Credenciales incorrectas. Verifica tu email y contraseña.')
     } else {
-      // Guardar o limpiar email según checkbox
       if (remember) {
         localStorage.setItem('rememberedEmail', email)
       } else {
         localStorage.removeItem('rememberedEmail')
       }
-      navigate('/admin')
+      navigate('/puntopenal-admin')
     }
 
     setLoading(false)
@@ -50,26 +56,19 @@ export default function Login() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        {/* Logo */}
-        <div style={styles.logoBox}>
-          <div style={styles.logoIconBg}>
-            <Shirt size={28} color="#fff" />
-          </div>
-          <h2 style={styles.title}>CamisasAdmin</h2>
+        <div style={styles.logoSection}>
+          <span style={styles.logoText}>PUNTO PENAL</span>
+          <p style={styles.subtitle}>Panel de administración</p>
         </div>
 
-        <p style={styles.subtitle}>Ingresá a tu panel de control</p>
-
-        <form onSubmit={handleLogin} style={styles.form}>
+        <form onSubmit={handleLogin} style={styles.form} noValidate>
           <div style={styles.field}>
-            <label style={styles.label}>Email</label>
+            <label style={styles.label}>Correo electrónico</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               style={styles.input}
-              placeholder="admin@ejemplo.com"
-              required
             />
           </div>
 
@@ -80,27 +79,28 @@ export default function Login() {
               value={password}
               onChange={e => setPassword(e.target.value)}
               style={styles.input}
-              placeholder="••••••••"
-              required
             />
           </div>
 
-          {/* Recordar usuario */}
-          <label style={styles.rememberRow}>
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={e => setRemember(e.target.checked)}
-              style={styles.checkbox}
-            />
-            <span style={styles.rememberText}>Recordar mi usuario</span>
-          </label>
+          <div style={styles.optionsRow}>
+            <label style={styles.rememberRow}>
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={e => setRemember(e.target.checked)}
+                style={styles.checkbox}
+              />
+              <span style={styles.rememberText}>Recordar sesión</span>
+            </label>
+            {/* Botón "¿Olvidaste tu contraseña?" eliminado */}
+          </div>
 
           {error && <p style={styles.error}>{error}</p>}
 
           <button type="submit" style={styles.button} disabled={loading}>
-            {loading ? 'Ingresando...' : 'Ingresar'}
+            {loading ? 'Ingresando...' : 'Acceder'}
           </button>
+
           <button
             type="button"
             style={styles.catalogBtn}
@@ -120,49 +120,34 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: 'radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.16) 0%, transparent 45%), radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.12) 0%, transparent 45%), #070a13',
     padding: '1.5rem',
+    background: 'linear-gradient(135deg, #0E526B 0%, #1a3a4a 100%)',
   },
   card: {
-    background: 'rgba(255, 255, 255, 0.03)',
-    backdropFilter: 'blur(20px)',
-    WebkitBackdropFilter: 'blur(20px)',
-    padding: '3rem 2.5rem',
-    borderRadius: '24px',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.3)',
     width: '100%',
     maxWidth: '420px',
+    padding: '2.5rem 2rem',
+    background: 'rgba(255, 255, 255, 0.08)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    borderRadius: '24px',
+    border: '1px solid rgba(255, 255, 255, 0.12)',
+    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
   },
-  logoBox: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '0.65rem',
-    marginBottom: '0.65rem',
+  logoSection: {
+    textAlign: 'center',
+    marginBottom: '2rem',
   },
-  logoIconBg: {
-    background: 'var(--accent)',
-    padding: '0.45rem',
-    borderRadius: '8px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 4px 10px rgba(99, 102, 241, 0.35)',
-  },
-  title: {
+  logoText: {
     fontSize: '1.5rem',
     fontWeight: 800,
-    color: '#fff',
-    margin: 0,
-    letterSpacing: '-0.3px',
+    color: '#ffffff',
+    letterSpacing: '1px',
   },
   subtitle: {
-    textAlign: 'center',
-    color: '#94a3b8',
-    fontSize: '0.9rem',
-    marginBottom: '2rem',
-    fontWeight: 500,
+    fontSize: '0.85rem',
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: '0.25rem',
   },
   form: {
     display: 'flex',
@@ -172,69 +157,78 @@ const styles: Record<string, React.CSSProperties> = {
   field: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.45rem',
+    gap: '0.4rem',
   },
   label: {
-    fontWeight: 700,
-    fontSize: '0.85rem',
-    color: '#cbd5e1',
+    fontSize: '0.8rem',
+    fontWeight: 600,
+    color: 'rgba(255, 255, 255, 0.9)',
+    letterSpacing: '0.3px',
   },
   input: {
-    padding: '0.7rem 0.95rem',
-    borderRadius: '10px',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    background: 'rgba(255, 255, 255, 0.05)',
-    color: '#fff',
+    padding: '0.75rem 1rem',
+    borderRadius: '12px',
+    border: '1px solid #e2e8f0',
+    background: '#f8fafc',
+    color: '#1e293b',
     fontSize: '0.95rem',
     outline: 'none',
+    transition: 'all 0.3s',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.04)',
+  },
+  optionsRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: '-0.25rem',
   },
   rememberRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '0.55rem',
+    gap: '0.5rem',
     cursor: 'pointer',
-    marginTop: '0.1rem',
   },
   checkbox: {
     width: '16px',
     height: '16px',
     cursor: 'pointer',
-    accentColor: 'var(--accent)',
+    accentColor: '#0E526B',
+    borderRadius: '4px',
   },
   rememberText: {
-    fontSize: '0.85rem',
-    color: '#94a3b8',
-    fontWeight: 500,
+    fontSize: '0.8rem',
+    color: 'rgba(255, 255, 255, 0.85)',
   },
   button: {
-    padding: '0.78rem',
-    background: 'var(--accent)',
-    color: 'white',
+    padding: '0.8rem',
+    background: 'linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%)',
+    color: '#0E526B',
     border: 'none',
-    borderRadius: '10px',
-    fontSize: '0.98rem',
+    borderRadius: '12px',
+    fontSize: '0.95rem',
     fontWeight: 700,
     cursor: 'pointer',
     marginTop: '0.5rem',
-    boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
+    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2)',
+    transition: 'all 0.3s',
   },
   error: {
-    color: '#f43f5e',
-    fontSize: '0.88rem',
-    background: 'rgba(244, 63, 94, 0.1)',
+    color: '#f87171',
+    fontSize: '0.85rem',
+    background: 'rgba(248, 113, 113, 0.15)',
     padding: '0.5rem 0.85rem',
     borderRadius: '8px',
-    border: '1px solid rgba(244, 63, 94, 0.15)',
+    border: '1px solid rgba(248, 113, 113, 0.2)',
     margin: 0,
   },
   catalogBtn: {
     background: 'transparent',
     border: 'none',
-    color: '#94a3b8',
-    fontSize: '0.85rem',
-    fontWeight: 600,
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: '0.8rem',
+    fontWeight: 500,
     cursor: 'pointer',
-    marginTop: '0.4rem',
+    marginTop: '0.2rem',
     transition: 'color 0.2s',
     textAlign: 'center',
   },
