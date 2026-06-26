@@ -4,6 +4,30 @@
   padding: 0;
 }
 
+/* ============================================
+   CORRECCIÓN PARA OVERSCOLL EN MÓVIL
+   ============================================ */
+html {
+  height: 100%;
+  background: #0E526B; /* ← color de tu marca */
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background: #0E526B; /* ← color de tu marca */
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  background: var(--bg-main);
+}
+
 :root {
   --primary: #0b0f19;
   --accent: #6366f1;
@@ -23,14 +47,6 @@
   --border-color: #e2e8f0;
   --glass-bg: rgba(255, 255, 255, 0.75);
   --glass-border: rgba(255, 255, 255, 0.5);
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg-main);
-  color: var(--text-main);
-  -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
 }
 
 button {
