@@ -362,8 +362,15 @@ export default function Catalog() {
 
 const styles: Record<string, React.CSSProperties> = {
   page: { minHeight: '100vh', background: 'var(--bg-main)', display: 'flex', flexDirection: 'column' },
-  // ✅ CAMBIO: background sólido #0E526B en lugar de rgba con transparencia
-  header: { background: '#0E526B', borderBottom: '1px solid rgba(255,255,255,0.2)', position: 'sticky', top: 0, zIndex: 100, boxShadow: '0 1px 10px rgba(15, 23, 42, 0.03)' },
+  header: { 
+    background: '#0E526B', 
+    borderBottom: '1px solid rgba(255,255,255,0.2)', 
+    position: 'sticky', 
+    top: 0, 
+    zIndex: 100,
+    width: '100%', // ← AGREGADO: para que ocupe todo el ancho
+    boxShadow: '0 1px 10px rgba(15, 23, 42, 0.03)' 
+  },
   headerInner: { maxWidth: '1200px', margin: '0 auto', padding: '0.85rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   logo: { display: 'flex', alignItems: 'center', gap: '0.6rem' },
   logoText: { fontSize: '1.2rem', fontWeight: 800, letterSpacing: '-0.3px', color: '#ffffff' },

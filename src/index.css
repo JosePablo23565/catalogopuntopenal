@@ -71,7 +71,7 @@
 html {
   height: 100%;
   background: #0E526B;
-  overflow-x: hidden;
+  overflow-x: visible; /* ✅ CAMBIADO: antes era 'hidden' */
 }
 
 body {
@@ -82,7 +82,7 @@ body {
   font-family: 'Barlow', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color: var(--text-main);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: visible; /* ✅ CAMBIADO: antes era 'hidden' */
   width: 100%;
   max-width: 100%;
 }
@@ -104,9 +104,9 @@ body::before {
   background: var(--bg-main);
   position: relative;
   z-index: 1;
-  width: 100%; /* ← NUEVO */
-  max-width: 100%; /* ← NUEVO */
-  overflow-x: hidden; /* ← NUEVO */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible; /* ✅ CAMBIADO: antes era 'hidden' */
 }
 
 :root {
@@ -216,17 +216,17 @@ input, textarea, select {
   display: grid !important;
   grid-template-columns: repeat(2, 1fr) !important;
   gap: 1rem !important;
-  width: 100% !important; /* ← NUEVO */
-  max-width: 100% !important; /* ← NUEVO */
-  padding: 0 0.5rem !important; /* ← NUEVO */
-  box-sizing: border-box !important; /* ← NUEVO */
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 0.5rem !important;
+  box-sizing: border-box !important;
 }
 
 @media (min-width: 640px) {
   .catalog-grid {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 1.25rem !important;
-    padding: 0 1rem !important; /* ← NUEVO */
+    padding: 0 1rem !important;
   }
 }
 
@@ -234,6 +234,6 @@ input, textarea, select {
   .catalog-grid {
     grid-template-columns: repeat(4, 1fr) !important;
     gap: 1.75rem !important;
-    padding: 0 1.5rem !important; /* ← NUEVO */
+    padding: 0 1.5rem !important;
   }
 }
